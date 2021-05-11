@@ -1,13 +1,13 @@
 import os
 
+import git
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
 
-from .models import WorkflowRegistry, Workflow, WorkflowStatus, Run, RunStatus
-from .utils import make_dir, find_file
+from .models import Run, RunStatus, Workflow, WorkflowRegistry, WorkflowStatus
+from .utils import find_file, make_dir
 
-import git
 
 @receiver(post_save, sender=WorkflowRegistry)
 def create_workflow(sender, instance, created, raw, **kwargs):

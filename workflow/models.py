@@ -1,13 +1,13 @@
 import os
 
 from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.fields import PositiveSmallIntegerField
 from django.db.models.fields.related import ForeignKey
 
-from .utils import make_dir
 from .storage import OverwriteStorage
+from .utils import make_dir
 
 WORKFLOW_STATUS_CHOICES = [
     ("CREATED", "Created"),

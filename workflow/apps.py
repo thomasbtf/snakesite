@@ -1,5 +1,6 @@
-import workflow
 from django.apps import AppConfig
+
+import workflow
 
 
 class WorkflowConfig(AppConfig):
