@@ -150,5 +150,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-WORKFLOWS = os.path.join(MEDIA_ROOT, "workflow")
+WORKFLOWS = os.path.join(MEDIA_ROOT, "workflows")
 RESULTS = os.path.join(MEDIA_ROOT, "results")

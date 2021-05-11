@@ -22,20 +22,24 @@ def create_workflow(sender, instance, created, raw, **kwargs):
 
     if created:
         # TODO find a nicer solution for the folder name changes
+        # maybe add it to the model
         storage_location = os.path.join(settings.WORKFLOWS, instance.__str__())
         make_dir(storage_location)
 
         # TODO think about large repositories and how to handel them
         git.Repo.clone_from(instance.url, storage_location)
 
-        path_snakefile = find_file(storage_location, "Snakefile")
-        print(path_snakefile)
+        # TODO think about nicer path suggestion algorithm
+        snakefile = find_file(storage_location, "Snakefile")
+        config = find_file(storage_location, "config.yaml")
+        sample_sheet = find_file(storage_location, "samples.csv")
+
         Workflow.objects.create(
             parent_workflow=instance,
             storage_location=storage_location,
-            path_snakefile=path_snakefile,
-            path_config="test/",
-            path_sample_sheet="test/",
+            path_snakefile=snakefile,
+            path_config=config,
+            path_sample_sheet=sample_sheet,
         )
 
 
