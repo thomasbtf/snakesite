@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import WorkflowRegistry, Workflow, WorkflowStatus, Run, RunStatus, RunMessage, Result
 
-# Register your models here.
+for model in [WorkflowRegistry, Workflow, WorkflowStatus, Run, RunStatus, RunMessage, Result]:
+    admin.site.register(model)
