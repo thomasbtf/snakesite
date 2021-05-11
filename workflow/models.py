@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models.fields import PositiveSmallIntegerField
 from django.db.models.fields.related import ForeignKey
 
+from .utils import make_dir
 
 WORKFLOW_STATUS_CHOICES = [
     ("CREATED", "Created"),
@@ -23,10 +24,14 @@ RUN_STATUS_CHOICES = [
 ]
 
 def workflows_path():
-    return os.path.join(settings.BASE_DIR, 'workflows')
+    DIR = settings.WORKFLOWS
+    make_dir(DIR)
+    return DIR
 
 def results_path():
-    return os.path.join(settings.BASE_DIR, 'results')
+    DIR = settings.RESULTS
+    make_dir(DIR)
+    return DIR
 
 class WorkflowRegistry(models.Model):
     name = models.CharField(max_length=60, blank=False)
@@ -36,13 +41,17 @@ class WorkflowRegistry(models.Model):
     contributors = models.ManyToManyField(User, blank=True, related_name="workflow_contributors")
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
     date_modified = models.DateTimeField(auto_now=True, blank=False)
+    version = models.PositiveSmallIntegerField(default=1, blank=False)
+    
+    class Meta:
+        unique_together = (('name', 'version'),)
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.name}-{self.version}"
+
 
 class Workflow(models.Model):
-    registration = models.ForeignKey(WorkflowRegistry, on_delete=models.CASCADE)
-    version = models.PositiveSmallIntegerField(default=1, blank=False)
+    parent_workflow = models.ForeignKey(WorkflowRegistry, on_delete=models.CASCADE)
     storage_location = models.FilePathField(path=workflows_path, allow_files= False, allow_folders=True, blank=False)
     path_snakefile = models.FilePathField(path=workflows_path, allow_files= True, allow_folders=False, blank=False)
     path_config = models.FilePathField(path=workflows_path, allow_files= True, allow_folders=False, blank=False)
@@ -50,7 +59,7 @@ class Workflow(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.registration}-{self.version}"
+        return f"local-{self.parent_workflow.name}-{self.parent_workflow.version}"
 
 class WorkflowStatus(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
@@ -58,13 +67,23 @@ class WorkflowStatus(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return self.status
+        return f"{self.workflow.__str__()}-{self.status}"
+
+
+def input_data_path(instance, filename):
+    return f"input_data/{instance.pk}/{filename}"  
+
+def sample_sheet_path(instance, filename):
+    return f"input_data/{instance.pk}/{filename}"  
+
+def input_data_path(instance, filename):
+    return f"input_data/{instance.pk}/{filename}"    
 
 class Run(models.Model):
     workflow = ForeignKey(Workflow, on_delete=models.CASCADE)
     created_by = ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    input_data = models.FileField(blank=False)
-    sample_sheet = models.FileField(blank=False)
+    input_data = models.FileField(upload_to=input_data_path, blank=False)
+    sample_sheet = models.FileField(upload_to=input_data_path, blank=False)
     config = models.FileField(blank=False)
     target = models.CharField(max_length=30, default="all", blank=False)
     cores = models.PositiveSmallIntegerField(default=1, blank=False)
@@ -73,6 +92,7 @@ class Run(models.Model):
 
     def __str__(self) -> str:
         return f"{self.workflow}-{self.target}"
+
 
 class RunMessage(models.Model):
     run = ForeignKey(Run, on_delete=models.CASCADE)
@@ -84,6 +104,7 @@ class RunMessage(models.Model):
     def __str__(self) -> str:
         return self.message
 
+
 class RunStatus(models.Model):
     run = ForeignKey(Run, on_delete=models.CASCADE)
     status =  models.CharField(max_length=15,choices=RUN_STATUS_CHOICES, default="QUEUED", blank=False)
@@ -92,6 +113,7 @@ class RunStatus(models.Model):
 
     def __str__(self) -> str:
         return self.status
+
 
 class Result(models.Model):
     run = ForeignKey(Run, on_delete=models.CASCADE)

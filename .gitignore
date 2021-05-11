@@ -145,3 +145,7 @@ dmypy.json
 
 # Local History for Visual Studio Code
 .history/
+
+# from this django project
+storage/
+media/
