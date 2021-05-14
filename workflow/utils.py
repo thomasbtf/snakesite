@@ -19,7 +19,7 @@ def find_file(directory: str, search_file :str) -> str:
         search_file (str): File to search in directory.
 
     Returns:
-        str:  Path to file 
+        str:  Path to file.
     """
    
     paths = []

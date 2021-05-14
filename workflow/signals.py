@@ -1,15 +1,17 @@
 import os
+from shutil import rmtree
 
 import git
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from .models import Run, RunStatus, Workflow, WorkflowRegistry, WorkflowStatus
+from .models import Run, RunStatus, WorkflowTemplate, Workflow, WorkflowStatus
 from .utils import find_file, make_dir
+from .tasks import start_snakemake_run
 
 
-@receiver(post_save, sender=WorkflowRegistry)
+# @receiver(post_save, sender=Workflow)
 def create_workflow(sender, instance, created, raw, **kwargs):
     """Creates a new local workflow, whenever a new workflow is registered.
 
@@ -23,7 +25,7 @@ def create_workflow(sender, instance, created, raw, **kwargs):
     if created:
         # TODO find a nicer solution for the folder name changes
         # maybe add it to the model
-        storage_location = os.path.join(settings.WORKFLOWS, instance.__str__())
+        storage_location = os.path.join(settings.WORKFLOWS, instance.get_safe_storage_location())
         make_dir(storage_location)
 
         # TODO think about large repositories and how to handel them
@@ -41,9 +43,22 @@ def create_workflow(sender, instance, created, raw, **kwargs):
             path_config=config,
             path_sample_sheet=sample_sheet,
         )
+    
+
+# @receiver(post_delete, sender=WorkflowCopy)
+def delete_workflow(sender, instance , **kwargs):
+    """Deletes new local workflow.
+
+    Args:
+        sender: The model class.
+        instance: The actual instance being deleted.
+    """
+    storage_location = instance.storage_location
+    rmtree(storage_location)
 
 
-@receiver(post_save, sender=Workflow)
+
+# @receiver(post_save, sender=WorkflowCopy)
 def create_workflow_status(sender, instance, created, raw, **kwargs):
     """Creates a new workflow status, whenever a new workflow is created.
 
@@ -59,7 +74,7 @@ def create_workflow_status(sender, instance, created, raw, **kwargs):
         )
 
 
-@receiver(post_save, sender=Run)
+# @receiver(post_save, sender=Run)
 def create_run_status(sender, instance, created, raw, **kwargs):
     """Creates a new run status, whenever a new run is created.
 
@@ -73,3 +88,9 @@ def create_run_status(sender, instance, created, raw, **kwargs):
         RunStatus.objects.create(
             run=instance
         )
+
+
+# @receiver(post_save, sender=RunStatus)
+def start_run(sender, instance, created, raw, **kwargs):
+    if instance.status == "QUEUED":
+        start_snakemake_run(instance.pk)
