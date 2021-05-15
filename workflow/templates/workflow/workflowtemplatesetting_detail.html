@@ -1,4 +1,5 @@
 {% extends "workflow/workflowtemplate_detail_base.html" %}
+{% block title %}{{ object.workflow_template.name }}{% endblock title %}
 
 {% block template_detail_header %}
 <h1 class="fw-light">{{ object.workflow_template.name }}</h1>

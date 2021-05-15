@@ -48,12 +48,26 @@
               </li>
             </ul>
             <ul class="navbar-nav me-right mb-2 mb-md-0">
+
+              {% if user.is_authenticated %}
+
               <li class="nav-item">
-                <a class="nav-link {% block nav_item_login %}{% endblock nav_item_login %}" href="#" aria-disabled="true">Login</a>
+                <a class="nav-link" href="{% url 'user:logout' %}">Logout</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {% block nav_item_register %}{% endblock nav_item_register %} href="#" aria-disabled="true">Register</a>
+                <a class="nav-link" href="#">Hi, {{user.username}}</a>
               </li>
+              
+              {% else %}
+              
+              <li class="nav-item">
+                <a class="nav-link {% block nav_item_login %}{% endblock nav_item_login %}" href="{% url 'user:login' %}" aria-disabled="true">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% block nav_item_register %}{% endblock nav_item_register %}" href="{% url 'user:register' %}" aria-disabled="true">Register</a>
+              </li>
+              {% endif %}
+
             </ul>
             <form class="d-flex">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -62,6 +76,15 @@
           </div>
         </div>
       </nav>
+      
+      {% for message in messages %}
+      <div class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert" >
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      </div>
+      {% endfor %}
       
       <!-- Content -->
       <div class="bg-light p-4 rounded">
