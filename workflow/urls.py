@@ -1,5 +1,11 @@
 from django.urls import path
-from .views import IndexView, WorkflowTemplateListView, WorkflowTemplateCreateView, WorkflowTemplateDetailView, WorkflowTemplateUpdateView, WorkflowTemplateDeleteView, WorkflowTemplateSettingDetailView, WorkflowTemplateSettingUpdateView
+
+from .views import (IndexView, WorkflowTemplateCreateView,
+                    WorkflowTemplateDeleteView, WorkflowTemplateDetailView,
+                    WorkflowTemplateListView,
+                    WorkflowTemplateSettingDetailView,
+                    WorkflowTemplateSettingUpdateView,
+                    WorkflowTemplateUpdateView)
 
 app_name="workflow"
 

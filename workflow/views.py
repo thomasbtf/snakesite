@@ -1,7 +1,9 @@
-from typing import List
-from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView, DeleteView
-from .models import WorkflowTemplate, WorkflowTemplateSetting
 from django.urls import reverse
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  TemplateView, UpdateView)
+
+from .models import WorkflowTemplate, WorkflowTemplateSetting
+
 
 class IndexView(TemplateView):
     template_name = "workflow/index.html"

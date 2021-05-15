@@ -3,12 +3,13 @@ from shutil import rmtree
 
 import git
 from django.conf import settings
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from .models import Run, RunStatus, WorkflowTemplate, Workflow, WorkflowStatus, WorkflowTemplateSetting
-from .utils import find_file, make_dir
+from .models import (RunStatus, WorkflowStatus, WorkflowTemplate,
+                     WorkflowTemplateSetting)
 from .tasks import start_snakemake_run
+from .utils import find_file, make_dir
 
 
 @receiver(post_save, sender=WorkflowTemplate)
