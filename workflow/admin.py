@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import (InputFile, Result, Run, RunMessage, RunStatus, Workflow,
-                     WorkflowTemplate, WorkflowStatus)
+from .models import (RunInputFile, Result, Run, RunMessage, RunStatus, Workflow,
+                     WorkflowTemplate, WorkflowStatus, WorkflowTemplateSetting)
 
-for model in [Workflow, WorkflowTemplate, WorkflowStatus, Run, RunStatus, RunMessage, Result, InputFile]:
+for model in [Workflow, WorkflowTemplate, WorkflowStatus, Run, RunStatus, RunMessage, Result, RunInputFile, WorkflowTemplateSetting]:
     admin.site.register(model)

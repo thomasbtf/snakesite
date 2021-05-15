@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', include('workflow.urls', namespace='workflow')),
     path('api/', include('workflow_api.urls', namespace='workflow_api')),
+    path('admin/', admin.site.urls),
 ]

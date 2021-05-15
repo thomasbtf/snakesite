@@ -1,0 +1,20 @@
+{% extends "workflow/base.html" %}
+{% block title %}Create a new template{% endblock title %}
+{% block nav_item_templates %}active{% endblock nav_item_templates %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1 class="fw-light">Update workflow template setting</h1>
+    <div class="container p-4">
+      <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+          {{ form|crispy }}
+        </fieldset>
+        <fieldset class="form-group mt-4">
+          <button type="submit" class="btn btn-outline-success">Submit</button>
+          <a href="{% url 'workflow:templates' %}" class="btn btn-outline-danger my-2">Cancel</a>
+
+        </fieldset>
+      </form>
+    </div>
+{% endblock %}

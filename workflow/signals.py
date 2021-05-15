@@ -6,14 +6,14 @@ from django.conf import settings
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from .models import Run, RunStatus, WorkflowTemplate, Workflow, WorkflowStatus
+from .models import Run, RunStatus, WorkflowTemplate, Workflow, WorkflowStatus, WorkflowTemplateSetting
 from .utils import find_file, make_dir
 from .tasks import start_snakemake_run
 
 
-# @receiver(post_save, sender=Workflow)
-def create_workflow(sender, instance, created, raw, **kwargs):
-    """Creates a new local workflow, whenever a new workflow is registered.
+@receiver(post_save, sender=WorkflowTemplate)
+def create_workflow_template(sender, instance, created, raw, **kwargs):
+    """Creates a new local workflow, whenever a new workflow template is registered.
 
     Args:
         sender: The model class.
@@ -25,7 +25,7 @@ def create_workflow(sender, instance, created, raw, **kwargs):
     if created:
         # TODO find a nicer solution for the folder name changes
         # maybe add it to the model
-        storage_location = os.path.join(settings.WORKFLOWS, instance.get_safe_storage_location())
+        storage_location = os.path.join(settings.WORKFLOW_TEMPLATES, str(instance.pk))
         make_dir(storage_location)
 
         # TODO think about large repositories and how to handel them
@@ -36,12 +36,12 @@ def create_workflow(sender, instance, created, raw, **kwargs):
         config = find_file(storage_location, "config.yaml")
         sample_sheet = find_file(storage_location, "samples.csv")
 
-        Workflow.objects.create(
-            parent_workflow=instance,
+        WorkflowTemplateSetting.objects.create(
+            workflow_template=instance,
             storage_location=storage_location,
             path_snakefile=snakefile,
-            path_config=config,
             path_sample_sheet=sample_sheet,
+            path_config=config,
         )
     
 

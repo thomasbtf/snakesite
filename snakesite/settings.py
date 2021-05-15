@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'workflow.apps.WorkflowConfig',
     'workflow_api.apps.WorkflowApiConfig',
     'rest_framework',
+    "crispy_forms",
+    "crispy_bootstrap5",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -153,3 +155,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 WORKFLOWS = os.path.join(MEDIA_ROOT, "workflows")
 RESULTS = os.path.join(MEDIA_ROOT, "results")
+WORKFLOW_TEMPLATES = os.path.join(MEDIA_ROOT, "templates")
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"

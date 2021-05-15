@@ -1,0 +1,14 @@
+{% extends "workflow/base.html" %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block nav_item_templates %}active{% endblock nav_item_templates %}
+{% block content %}
+    <h1 class="fw-light">Are you sure you want to delete the template "{{ object.name }}"</h1>
+    <p class="lead">All workflows, runs and results will be permanently lost!</p>
+        <form method="POST">
+            {% csrf_token %}
+        <fieldset class="form-group">
+            <button type="submit" class="btn btn-outline-danger">Yes, Delete</button>
+            <a href="{% url 'workflow:template-detail' object.id %}" class="btn btn-outline-secondary">Cancel</a>
+        </fieldset>
+    </form>
+{% endblock content %}

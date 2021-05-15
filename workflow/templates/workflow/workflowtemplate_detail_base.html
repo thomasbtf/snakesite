@@ -1,0 +1,23 @@
+{% extends "workflow/base.html" %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block nav_item_templates %}active{% endblock nav_item_templates %}
+{% block content %}
+  {% block template_detail_header %}{% endblock template_detail_header%}  
+
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link {% block template_active_information %}{% endblock template_active_information %}" aria-current="page" href="{% url 'workflow:template-detail' object.id %}">Information</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% block template_active_settings %}{% endblock template_active_settings %}" href="{% url 'workflow:template-setting' object.id %}">Settings</a>
+      </li>
+    </ul>
+
+    {% block template_detail_content %}{% endblock template_detail_content%}
+
+    <p class="mt-4">
+      {% block template_detail_button %}{% endblock template_detail_button %}
+      <a href="{% url 'workflow:template-delete' object.id %}" class="btn btn-outline-danger my-2">Delete template</a>
+      <a href="{% url 'workflow:templates' %}" class="btn btn-outline-secondary my-2">Back to all template</a>
+    </p>
+{% endblock content %}

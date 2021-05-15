@@ -1,0 +1,31 @@
+{% extends "workflow/workflowtemplate_detail_base.html" %}
+
+{% block template_detail_header %}
+<h1 class="fw-light">{{ object.workflow_template.name }}</h1>
+<p class="lead text-muted">{{ object.workflow_template.description }}</p> 
+{% endblock template_detail_header%}
+
+{% block template_active_settings %}active{% endblock template_active_settings %}
+
+{% block template_detail_content %}
+    <table class="table">
+      <tbody>
+          <tr>
+            <th scope="row">Path to Snakefile</th>
+            <td>{{ object.path_snakefile }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Path to Sample Sheet</th>
+            <td>{{ object.path_sample_sheet }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Path to Config</th>
+            <td>{{ object.path_config }}</td>
+          </tr>
+      </tbody>
+    </table>      
+{% endblock template_detail_content %}
+
+{% block template_detail_button %}
+  <a href="{% url 'workflow:template-setting-update' object.id %}" class="btn btn-outline-primary my-2">Update settings</a>
+{% endblock template_detail_button %}

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.fields import PositiveSmallIntegerField
 from django.db.models.fields.related import ForeignKey
+from django.urls import reverse
 
 from .storage import OverwriteStorage
 from .utils import make_dir
@@ -25,6 +26,11 @@ RUN_STATUS_CHOICES = [
     ("SUCCESSFULL", "Successful"),
 ]
 
+def templates_path():
+    DIR = settings.WORKFLOW_TEMPLATES
+    make_dir(DIR)
+    return DIR
+
 def workflows_path():
     DIR = settings.WORKFLOWS
     make_dir(DIR)
@@ -35,44 +41,72 @@ def results_path():
     make_dir(DIR)
     return DIR
 
+
 class WorkflowTemplate(models.Model):
     """
     Data about the workflow itself.
     """
-    name = models.CharField(max_length=60, blank=False)
+    name = models.CharField(max_length=60, blank=False, unique=True)
     description = models.TextField(max_length=400, blank=False)
     url = models.URLField(blank=False)
-    owner = models.ManyToManyField(User, blank=False, related_name="workflow_owner")
-    contributors = models.ManyToManyField(User, blank=True, related_name="workflow_contributors")
-    version = models.PositiveSmallIntegerField(default=1, blank=False)
+    owner = models.ManyToManyField(User, blank=False, related_name="workflow_template_owner")
+    contributors = models.ManyToManyField(User, blank=True, related_name="workflow_template_contributors")
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
     date_modified = models.DateTimeField(auto_now=True, blank=False)
-    
-    class Meta:
-        unique_together = (('name', 'version'),)
 
     def __str__(self) -> str:
-        return f"{self.name}-{self.version}"
+        return f"{self.name} Template"
 
-    def get_safe_storage_location(self):
-        keepcharacters = ('.','_')
-        cleaned = [c.lower() for c in self.name if c.isalnum() or c in keepcharacters]
-        return f"{self.pk}-" + "".join(cleaned).rstrip()
+    def get_absolute_url(self):
+        return reverse("workflow:template-detail", kwargs={'pk' : self.pk})
+
+
+
+class WorkflowTemplateSetting(models.Model):
+    """
+    Suggested settings of workflow.
+    """
+    workflow_template = models.ForeignKey(WorkflowTemplate, on_delete=models.CASCADE)
+    path_snakefile = models.CharField(max_length=100, blank=False)
+    path_sample_sheet = models.CharField(max_length=100, blank=False)
+    path_config = models.CharField(max_length=100, blank=False)
+    date_created = models.DateTimeField(auto_now_add=True, blank=False)
+    storage_location = models.FilePathField(path=templates_path, allow_files= False, allow_folders=True, blank=False)
+
+
+    def __str__(self) -> str:
+        return f"{self.workflow_template.__str__()} Setting"
+
+    def get_absolute_url(self):
+        return reverse("workflow:template-setting", kwargs={'pk' : self.pk})
+
 
 class Workflow(models.Model):
     """
     The local copy of a workflow.
     """
-    parent_workflow = models.ForeignKey(WorkflowTemplate, on_delete=models.SET_NULL, null=True)
+    workflow_template = models.ForeignKey(WorkflowTemplate, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=60, blank=False)
     storage_location = models.FilePathField(path=workflows_path, allow_files= False, allow_folders=True, blank=False)
-    path_snakefile = models.CharField(max_length=100, blank=False)
-    path_sample_sheet = models.CharField(max_length=100, blank=False)
-    path_config = models.CharField(max_length=100, blank=False)
-    accessible_by = models.ManyToManyField(User, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="workflow_owner")
+    accessible_by = models.ManyToManyField(User, blank=True, related_name="accessible_by")
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.parent_workflow.name}-{self.parent_workflow.version}"
+        return f"{self.pk} {self.workflow_template.name}"
+
+
+class WorkflowSetting(models.Model):
+    """
+    Settings of a workflow
+    """
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    path_snakefile = models.CharField(max_length=100, blank=False)
+    path_sample_sheet = models.CharField(max_length=100, blank=False)
+    path_config = models.CharField(max_length=100, blank=False)
+
+    def __str__(self) -> str:
+        return f"{self.workflow.__str__()} Setting"
 
 
 class WorkflowStatus(models.Model):
@@ -84,7 +118,7 @@ class WorkflowStatus(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.workflow.__str__()}-{self.status}"
+        return f"{self.workflow.__str__()} {self.status}"
 
 
 def sample_sheet_path(instance, filename):
@@ -107,13 +141,13 @@ class Run(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"Run-{self.pk}-{self.workflow}-{self.target}"
+        return f"Run {self.pk} {self.workflow} {self.target}"
 
 
 def input_data_path(instance, filename):
     return f"{instance.run.workflow.storage_location}/data/{filename}"  
 
-class InputFile(models.Model):
+class RunInputFile(models.Model):
     """
     Contains all input files for a certain run.
     """
