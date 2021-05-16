@@ -157,6 +157,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 WORKFLOWS = os.path.join(MEDIA_ROOT, "workflows")
 RESULTS = os.path.join(MEDIA_ROOT, "results")
 WORKFLOW_TEMPLATES = os.path.join(MEDIA_ROOT, "templates")
+AVATARS = os.path.join(MEDIA_ROOT, "avatars")
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
@@ -169,3 +170,7 @@ MESSAGE_TAGS = {
         messages.WARNING: 'alert-warning',
         messages.ERROR: 'alert-danger',
  }
+
+LOGIN_REDIRECT_URL="workflow:index"
+LOGIN_URL="users:login"
+
