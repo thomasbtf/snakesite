@@ -14,7 +14,7 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         # TODO Think about rnd profile image without the need to store it
         abs_img = "".join([os.path.join(settings.AVATARS, str(instance.pk)), ".svg"])
-        rel_img = "".join([os.path.join("avatars", str(instance.pk)), ".svg"])
+        rel_img = "".join([os.path.join(os.path.dirname(settings.AVATARS), str(instance.pk)), ".svg"])
         create_avatar_image(abs_img)
         Profile.objects.create(user=instance, image = rel_img)
 

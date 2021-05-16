@@ -3,16 +3,25 @@ import os
 import py_avataaars as pa
 
 
-def create_avatar_image(img_path: str):
-    """Creates a random avatar.
-
-    Args:
-        img_path (str): Path to the avatar.
+def create_avatar_image(img_path: str, create_locally: bool = True, seed=None):
     """
+    Creates a local avatar image.
+    """
+    if create_locally:
+        dir = os.path.dirname(img_path)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
 
-    dir = os.path.dirname(img_path)
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+    avatar = generate_avatar(seed)
+    avatar.render_svg_file(img_path)
+
+
+def generate_avatar(seed):
+    """
+    Generate avatar. If not seed is give, a random one is created.
+    """
+    if seed:
+        random.seed(seed)
 
     def r(enum_):
         return random.choice(list(enum_))
@@ -35,4 +44,5 @@ def create_avatar_image(img_path: str):
         clothe_color=r(pa.Color),
         clothe_graphic_type=r(pa.ClotheGraphicType),
     )
-    avatar.render_svg_file(img_path)
+    return avatar
+

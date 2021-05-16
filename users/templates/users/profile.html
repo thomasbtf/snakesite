@@ -1,18 +1,32 @@
 {% extends "workflow/base.html" %}
 {% block title %}Profile{% endblock title %}
-{% block nav_item_login %}active{% endblock nav_item_login %}
+{% block nav_item_profile %}active{% endblock nav_item_profile %}
 {% block content %}      
 {% load crispy_forms_tags %}
 
-    <div class="content-section">
-        <div class="media">
-          <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
-          <div class="media-body">
-            <h2 class="account-heading">{{ user.username }}</h2>
-            <p class="text-secondary">{{ user.email }}</p>
-          </div>
-        </div>
-        <!-- FORM HERE -->
-      </div>
+  <div class="container py-5 pt-0 ">
+    <p class= "pb-4">
+      <img style="float:left" class="rounded-circle col-md-2 account-img " src="{{ user.profile.image.url }}"/>
+      <h1 class="content-heading">{{ user.username }}</h1>
+      {{ user.email }}
+      <p  class="small text-muted pt-4">
+        <a class="text-muted" href="{% url 'user:avatar' %}">
+          Not happy with your avatar? 
+          Create a new one!</a>
+      </p>
+    </p>
 
-{% endblock content %}  
+    <p style="clear:both" class ="pt-5">
+    
+    <form method="POST" enctype="multipart/form-data" class=>
+    {% csrf_token %}
+    {{ u_form|crispy }}                    
+    {{ p_form|crispy }}  
+    <p class ="pt-2"></p>            
+    <button class="btn btn-outline-primary" type="submit">Update Profile</button>
+    </form>
+    </p>
+  </div>
+
+
+{% endblock content %}  s

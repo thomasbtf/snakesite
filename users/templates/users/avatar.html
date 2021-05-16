@@ -1,0 +1,20 @@
+{% extends "workflow/base.html" %}
+{% block title %}Profile{% endblock title %}
+{% block nav_item_profile %}active{% endblock nav_item_profile %}
+{% block content %}      
+{% load crispy_forms_tags %}
+<div class=" d-flex align-items-center justify-content-center">
+        <p>
+        <img class="rounded-circle account-img align-middle" src="{% url 'users:avatar-rnd' rnd_seed  %}"/> <br>
+      </p>
+      <p>
+        <form method="POST" enctype="multipart/form-data" class="pt-2 pl-2">        
+            {% csrf_token %}    
+            <input type="hidden" name="seed" value="{{ rnd_seed }}" />
+            <a class="btn btn-outline-primary" href="{% url 'user:avatar' %}"">Another one!</a>
+            <button class="btn btn-outline-success" type="submit">Use this Avatar</button>
+            <a class="btn btn-outline-danger" href="{% url 'user:profile' %}"">Nah, keep old one</a>
+        </form>
+      </p>
+</div>
+{% endblock content %}  
