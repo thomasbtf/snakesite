@@ -10,7 +10,7 @@ def create_avatar_image(img_path: str):
         img_path (str): Path to the avatar.
     """
 
-    dir = os.path.dirname(path)
+    dir = os.path.dirname(img_path)
     if not os.path.exists(dir):
         os.makedirs(dir)
 
@@ -35,4 +35,4 @@ def create_avatar_image(img_path: str):
         clothe_color=r(pa.Color),
         clothe_graphic_type=r(pa.ClotheGraphicType),
     )
-    avatar.render_png_file(img_path)
+    avatar.render_svg_file(img_path)
