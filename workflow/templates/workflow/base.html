@@ -43,19 +43,32 @@
               <li class="nav-item">
                 <a class="nav-link {% block nav_item_about %}{% endblock nav_item_about %}" href="#" aria-disabled="true">About</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-              </li>
             </ul>
+
+            <!-- right navbar -->
+
             <ul class="navbar-nav me-right mb-2 mb-md-0">
 
               {% if user.is_authenticated %}
-              
-              <li class="nav-item">
-                <a class="nav-link {% block nav_item_profile %}{% endblock nav_item_profile %}" href="{% url 'user:profile' %}">Hi, {{user.username}}</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'user:logout' %}">Logout</a>
+
+              <li class="nav-item dropdown me-2">
+                <a class="nav-link dropdown-toggle active" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" width="24" height="24" class="rounded-circle">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small" aria-labelledby="navbarDropdown">
+                  <li class="dropdown-item-text">Signed in as</li>
+                  <li class="dropdown-item-text"><strong>{{user.username}}</strong></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Your templates</a></li>
+                  <li><a class="dropdown-item" href="#">Your workflows</a></li>
+                  <li><a class="dropdown-item" href="#">Your runs</a></li>
+                  <li><a class="dropdown-item" href="#">Your results</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Settings</a></li>
+                  <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="{% url 'user:logout' %}">Sign out</a></li>
+                </ul>
               </li>
               
               {% else %}

@@ -59,10 +59,12 @@ def profile_request(request):
 
 def rnd_avatar_request(request):
 	if request.method == "POST":
+		seed = request.POST.get("seed")
 		instance = Profile.objects.get(id=request.user.profile.pk)
-		abs_img = "".join([os.path.join(settings.AVATARS, str(instance.pk)), ".svg"])
-		rel_img = "".join([os.path.join(os.path.basename(settings.AVATARS), str(instance.pk)), ".svg"])
-		create_avatar_image(abs_img, seed = request.POST.get("seed"))
+		abs_img = "".join([os.path.join(settings.AVATARS, str(seed)), ".svg"])
+		rel_img = "".join([os.path.join(os.path.basename(settings.AVATARS), str(seed)), ".svg"])
+		create_avatar_image(abs_img, seed = seed)
+		print(instance.image)
 		instance.image = rel_img
 		instance.save()
 		# messages.success(request, "Your avatar hast been updated!" )
