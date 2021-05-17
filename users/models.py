@@ -10,8 +10,8 @@ class Profile(models.Model):
     def __str__(self):
         return f"{self.user.username} Profile"
 
-    def save(self):
-        super().save()
+    def save(self, *args, **kwargs):
+        super(Profile, self).save(*args, **kwargs)
 
         if not self.image.path.endswith(".svg"):
             img = Image.open(self.image.path)

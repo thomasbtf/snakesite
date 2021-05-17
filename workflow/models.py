@@ -55,7 +55,7 @@ class WorkflowTemplate(models.Model):
     date_modified = models.DateTimeField(auto_now=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.name} Template"
+        return f"Template {self.name}"
 
     def get_absolute_url(self):
         return reverse("workflow:template-detail", kwargs={'pk' : self.pk})
@@ -73,7 +73,6 @@ class WorkflowTemplateSetting(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
     storage_location = models.FilePathField(path=templates_path, allow_files= False, allow_folders=True, blank=False)
 
-
     def __str__(self) -> str:
         return f"{self.workflow_template.__str__()} Setting"
 
@@ -85,28 +84,32 @@ class Workflow(models.Model):
     """
     The local copy of a workflow.
     """
-    workflow_template = models.ForeignKey(WorkflowTemplate, on_delete=models.SET_NULL, null=True)
-    name = models.CharField(max_length=60, blank=False)
-    storage_location = models.FilePathField(path=workflows_path, allow_files= False, allow_folders=True, blank=False)
+    workflow_template = models.ForeignKey(WorkflowTemplate, on_delete=models.SET_NULL, null=True,  help_text="Select the template you want to use.")
+    name = models.CharField(max_length=60, blank=False, help_text="The name of your workflow. E.g. \"SARS-CoV-2 Production\".")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="workflow_owner")
     accessible_by = models.ManyToManyField(User, blank=True, related_name="accessible_by")
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.pk} {self.workflow_template.name}"
+        return f"{self.pk} {self.name}"
+
+    def get_absolute_url(self):
+        return reverse("workflow:workflow-detail", kwargs={'pk' : self.pk})
+
 
 
 class WorkflowSetting(models.Model):
     """
-    Settings of a workflow
+    Settings of a local workflow.
     """
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    storage_location = models.FilePathField(path=workflows_path, allow_files= False, allow_folders=True, blank=False)
     path_snakefile = models.CharField(max_length=100, blank=False)
     path_sample_sheet = models.CharField(max_length=100, blank=False)
     path_config = models.CharField(max_length=100, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.workflow.__str__()} Setting"
+        return f"Settings {self.workflow.__str__()}"
 
 
 class WorkflowStatus(models.Model):

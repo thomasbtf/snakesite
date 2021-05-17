@@ -1,20 +1,22 @@
 import os
-from shutil import rmtree
+from re import template
+from shutil import rmtree, copytree
 
 import git
 from django.conf import settings
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 
-from .models import (RunStatus, WorkflowStatus, WorkflowTemplate,
+from .models import (RunStatus, Workflow, WorkflowSetting, WorkflowStatus, WorkflowTemplate,
                      WorkflowTemplateSetting)
 from .tasks import start_snakemake_run
 from .utils import find_file, make_dir
 
 
 @receiver(post_save, sender=WorkflowTemplate)
-def create_workflow_template(sender, instance, created, raw, **kwargs):
-    """Creates a new local workflow, whenever a new workflow template is registered.
+def workflow_template_created(sender, instance, created, raw, **kwargs):
+    """Creates a template settings, whenever a new workflow template is registered.
+    Also downloads the template from GitHub.
 
     Args:
         sender: The model class.
@@ -46,34 +48,51 @@ def create_workflow_template(sender, instance, created, raw, **kwargs):
         )
     
 
-# @receiver(post_delete, sender=WorkflowCopy)
-def delete_workflow(sender, instance , **kwargs):
-    """Deletes new local workflow.
+@receiver(pre_delete, sender=WorkflowTemplate)
+def workflow_template_deleted(sender, instance , **kwargs):
+    """Deletes a a workflow template and deletes the local workflow copy.
 
     Args:
         sender: The model class.
         instance: The actual instance being deleted.
     """
-    storage_location = instance.storage_location
+    settings = WorkflowTemplateSetting.objects.get(workflow_template_id=instance.pk)
+    storage_location = settings.storage_location
     rmtree(storage_location)
+    settings.delete()
 
 
-
-# @receiver(post_save, sender=WorkflowCopy)
-def create_workflow_status(sender, instance, created, raw, **kwargs):
-    """Creates a new workflow status, whenever a new workflow is created.
-
-    Args:
-        sender: The model class.
-        instance: The actual instance being saved.
-        created (boolean): True if a new record was created.
-        raw (boolean): True if the model is saved exactly as presented (i.e. when loading a fixture).
-    """
+@receiver(post_save, sender=Workflow)
+def workflow_created(sender, instance, created, raw, **kwargs):
     if created:
+        storage_location = os.path.join(settings.WORKFLOWS, str(instance.pk))
+        template_settings = WorkflowTemplateSetting.objects.get(workflow_template_id=instance.workflow_template.pk)
+        template_storage_location = template_settings.storage_location
+        copytree(template_storage_location, storage_location)
+
+        WorkflowSetting.objects.create(
+            workflow = instance,
+            storage_location = storage_location,
+            path_snakefile = template_settings.path_snakefile,
+            path_sample_sheet = template_settings.path_sample_sheet,
+            path_config = template_settings.path_config,
+         )
+
         WorkflowStatus.objects.create(
             workflow=instance
         )
 
+@receiver(pre_delete, sender=Workflow)
+def workflow_template_deleted(sender, instance , **kwargs):
+    settings = WorkflowSetting.objects.get(workflow_id=instance.pk)
+    status = WorkflowStatus.objects.get(workflow_id=instance.pk)
+    storage_location = settings.storage_location
+
+    print(storage_location)
+
+    rmtree(storage_location)
+    settings.delete()
+    status.delete()
 
 # @receiver(post_save, sender=Run)
 def create_run_status(sender, instance, created, raw, **kwargs):

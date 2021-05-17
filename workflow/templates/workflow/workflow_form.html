@@ -1,9 +1,9 @@
 {% extends "workflow/base.html" %}
 {% block title %}Create a new template{% endblock title %}
-{% block nav_item_templates %}active{% endblock nav_item_templates %}
+{% block nav_item_workflow %}active{% endblock nav_item_workflow %}
 {% load crispy_forms_tags %}
 {% block content %}
-  <h1 class="fw-light">Create a new workflow</h1>
+  <h1 class="fw-light">Create a new workflow template</h1>
   <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
 
   <div class="container p-4">
@@ -14,7 +14,7 @@
       </fieldset>
       <fieldset class="form-group mt-4">
         <button type="submit" class="btn btn-outline-success">Submit</button>
-        <a href="{% url 'workflow:dashboard' %}" class="btn btn-outline-danger my-2">Cancel</a>
+        <a href="{% url 'workflow:templates' %}" class="btn btn-outline-danger my-2">Cancel</a>
 
       </fieldset>
     </form>
