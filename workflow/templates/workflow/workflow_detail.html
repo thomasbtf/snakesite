@@ -5,6 +5,9 @@
 
   <h1 class="fw-light">{{ object.name }}</h1>
   <p class="lead text-muted">{{ object.workflow_template.description }}</p> 
+
+  <a href="{% url 'workflow:run-create' object.id %}" class="btn btn-outline-success my-2">Start a run</a>
+
   
   <h2 class="fw-light">Information</h2>
   <table class="table">
@@ -59,7 +62,8 @@
     </tbody>
   </table>
 
-  <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-primary my-2">Update workflow</a>
+  <a href="{% url 'workflow:workflow-update' object.id %}" class="btn btn-outline-primary my-2">Update workflow</a>
+  <a href="{% url 'workflow:workflow-setting-update' settings.id %}" class="btn btn-outline-primary my-2">Update paths</a>
   <a href="{% url 'workflow:workflow-delete' object.id %}" class="btn btn-outline-danger my-2">Delete workflow</a>
   <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-secondary my-2">Back to all workflows</a>
 

@@ -13,6 +13,7 @@ from .utils import make_dir
 WORKFLOW_STATUS_CHOICES = [
     ("CREATED", "Created"),
     ("TESTING", "Testing"),
+    ("QUEUED", "Queued"),
     ("RUNNING", "Running"),
     ("PRODUCTION", "Available"),
     ("DEPRECATED", "Deprecated"),
@@ -111,6 +112,9 @@ class WorkflowSetting(models.Model):
     def __str__(self) -> str:
         return f"Settings {self.workflow.__str__()}"
 
+    def get_absolute_url(self):
+        return reverse("workflow:workflow-detail", kwargs={'pk' : self.workflow.pk})
+
 
 class WorkflowStatus(models.Model):
     """
@@ -125,10 +129,12 @@ class WorkflowStatus(models.Model):
 
 
 def sample_sheet_path(instance, filename):
-    return os.path.join(instance.workflow.storage_location, instance.workflow.path_sample_sheet)
+    settings = WorkflowSetting.objects.get(workflow_id=instance.workflow.id)
+    return os.path.join(settings.storage_location, settings.path_sample_sheet)
 
 def config_path(instance, filename):
-    return os.path.join(instance.workflow.storage_location, instance.workflow.path_config)
+    settings = WorkflowSetting.objects.get(workflow_id=instance.workflow.id)
+    return os.path.join(settings.storage_location, settings.path_config)
 
 class Run(models.Model):
     """
@@ -136,26 +142,32 @@ class Run(models.Model):
     """
     workflow = ForeignKey(Workflow, on_delete=models.CASCADE)
     created_by = ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    sample_sheet = models.FileField(upload_to=sample_sheet_path, blank=False, max_length=200, storage=OverwriteStorage())
-    config = models.FileField(upload_to=config_path, max_length=200, storage=OverwriteStorage())
-    target = models.CharField(max_length=30, default="all", blank=False)
-    cores = models.PositiveSmallIntegerField(default=1, blank=False)
-    result_is_private = models.BooleanField(default=False, blank=False)
+    sample_sheet = models.FileField(upload_to=sample_sheet_path, blank=False, max_length=200, storage=OverwriteStorage(), help_text="Required. Upload your sample sheet here. Paths to input data files must start with \"data/\".")
+    config = models.FileField(upload_to=config_path, max_length=200, storage=OverwriteStorage(), blank=True, help_text="Optional. Upload a changed config file here. Else the default config from the workflow is used.")
+    target = models.CharField(max_length=30, default="all", blank=False, help_text="Target(s) to build by snakemake. May be rules or files.")
+    cores = models.PositiveSmallIntegerField(default=6, blank=False, help_text="Number of maximum CPU cores/jobs running in parallel.")
+    run_is_private = models.BooleanField(default=False, blank=False, help_text="Whether to show the run and it results publicly.")
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
         return f"Run {self.pk} {self.workflow} {self.target}"
 
 
+def sample_sheet_path(instance, filename):
+    
+    return os.path.join(settings.storage_location, settings.path_sample_sheet)
+
+
 def input_data_path(instance, filename):
-    return f"{instance.run.workflow.storage_location}/data/{filename}"  
+    settings = WorkflowSetting.objects.get(workflow_id=instance.run.workflow.id)
+    return f"{settings.storage_location}/data/{filename}"  
 
 class RunInputFile(models.Model):
     """
     Contains all input files for a certain run.
     """
     run = ForeignKey(Run, on_delete=models.CASCADE)
-    input_data = models.FileField(upload_to=input_data_path, blank=False, max_length=200, storage=OverwriteStorage())
+    input_data = models.FileField(upload_to=input_data_path, blank=False, max_length=200, storage=OverwriteStorage(), help_text="Required. The input data for your run.")
 
     def __str__(self) -> str:
         filename = os.path.basename(str(self.input_data))

@@ -9,7 +9,10 @@ from .views import (IndexView, DashboardView, WorkflowTemplateCreateView,
                     WorkflowCreateView,
                     WorkflowDetailView,
                     WorkflowListView,
-                    WorkflowDeleteView)
+                    WorkflowDeleteView,
+                    WorkflowUpdateView,
+                    WorkflowSettingUpdateView,
+                    create_run_view,)
 
 app_name="workflow"
 
@@ -26,6 +29,8 @@ urlpatterns = [
     path('workflows/', WorkflowListView.as_view(), name="workflows"),
     path('workflow/new/', WorkflowCreateView.as_view(), name="workflow-create"),
     path('workflow/<int:pk>/', WorkflowDetailView.as_view(), name="workflow-detail"),
-    # path('workflow/<int:pk>/update', WorkflowUpdateView.as_view(), name="workflow-update"),
+    path('workflow/<int:pk>/update', WorkflowUpdateView.as_view(), name="workflow-update"),
     path('workflow/<int:pk>/delete', WorkflowDeleteView.as_view(), name="workflow-delete"),
+    path('workflow/setting/<int:pk>/update', WorkflowSettingUpdateView.as_view(), name="workflow-setting-update"),
+    path('run/new/<int:workflow_id>', create_run_view, name="run-create"),
 ]
