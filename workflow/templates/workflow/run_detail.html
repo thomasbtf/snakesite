@@ -1,0 +1,68 @@
+{% extends "workflow/run_list.html" %}
+{% block title %}{{ object.name }}{% endblock title %}
+
+{% block selected_run %}
+  {% if run.id == object.id %}
+    active
+  {% endif %}
+{% endblock selected_run %}
+
+{% block detail_content %}
+
+    <h1 class="fw-light">Run {{ object.id }}</h1>
+    <p class="lead text-muted">in {{ object.workflow.name}}</p> 
+
+    <a href="#" class="btn btn-outline-primary my-2">Restart</a>
+    <a href="#" class="btn btn-outline-warning my-2">Cancel</a>
+    <a href="{% url 'workflow:run-delete' object.id %}" class="btn btn-outline-danger my-2">Delete</a>
+    <a href="#" class="btn btn-outline-secondary my-2">Back</a>
+
+    <h2 class="fw-light">Information</h2>
+    <table class="table">
+        <tr>
+          <th scope="row">Progress</th>
+          <td>
+
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Status</th>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row">Started by</th>
+          <td>
+              {{ object.created_by.get_username }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Date Created</th>
+          <td>{{ object.date_created }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Target</th>
+          <td>{{ object.target }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Cores</th>
+          <td>{{ object.cores }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Is Private</th>
+          <td>{{ object.run_is_private }}</td>
+        </tr>
+        </tr>
+        </tr>
+        <tr>
+          <th scope="row">Sample Sheet</th>
+          <td>{{ object.sample_sheet }}</td>
+        </tr>
+        </tr>
+        <tr>
+          <th scope="row">Input Files</th>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+{% endblock detail_content %}

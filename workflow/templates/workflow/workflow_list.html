@@ -1,13 +1,14 @@
 {% extends "workflow/base.html" %}
-{% block title %}Templates{% endblock title %}
+{% block title %}Workflows{% endblock title %}
 {% block nav_item_workflow %}active{% endblock nav_item_workflow %}
 {% block content %}
-    <h1 class="fw-light">Your Workflow</h1>
+    <h1 class="fw-light">Your Workflows</h1>
     <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
     <p>
         <a href="{% url 'workflow:workflow-create' %}" class="btn btn-outline-primary my-2">Create a new workflow</a>
     </p>
     
+    <!-- cards -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
             {% for workflow in object_list %}
             <div class="col">
@@ -16,19 +17,35 @@
                     <!-- <img src="..." class="card-img-top" alt="..."> -->
                     <div class="card-body">
                         <h5><a class="card-title test-title text-decoration-none text-reset" href="{% url 'workflow:workflow-detail' workflow.id %}">{{ workflow.name }}</a></h5>
+                        <small class="card-subtitle mb-2 text-muted">
+                            {% if workflow.Status == "Running" %}
+                                <div class="spinner-grow spinner-grow-sm text-danger" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            {% endif %}
+                            {{ workflow.Status }}
+                        </small>
                     </div>
+                    
                     <div class="d-flex justify-content-between align-items-center m-3">
                         <div class="btn-group">
                             <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:workflow-detail' workflow.id %}" role="button">Details</a>
-                            <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:run-create' workflow.id %}" role="button">Start new run</a>
+                            <a class="btn btn btn-sm btn-outline-secondary {% if workflow.Status == "Running" %}disabled{% endif %}" href="{% url 'workflow:run-create' workflow.id %}" role="button">Start new run</a>
                         </div>
-                        <small class="text-muted">192 Runs</small>
+                        <small class="text-muted">
+                            {% if workflow.NumRuns == 1 %}
+                                1 Run
+                            {% else %}
+                                {{ workflow.NumRuns }} Runs
+                            {% endif %}
+                        </small>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
 
+        <!-- pagination -->
         {% if is_paginated %}
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center mt-4">
@@ -84,8 +101,7 @@
                 <!-- Maybe add images later -->
                 <!-- <img src="..." class="card-img-top" alt="..."> -->
                 <div class="card-body">
-                    <h5><a class="card-title test-title text-decoration-none text-reset" href="{% url 'workflow:workflow-detail' workflow.id %}">{{ workflow.name }}</a></h5>
-                <span class="badge rounded-pill bg-primary">shared</span>
+                    <h5><a class="card-title test-title text-decoration-none text-reset" href="{% url 'workflow:workflow-detail' workflow.id %}">{{ workflow.name }} <span class="badge rounded-pill bg-primary">shared</span></a></h5>
                 </div>
                 <div class="d-flex justify-content-between align-items-center m-3">
                     <div class="btn-group">

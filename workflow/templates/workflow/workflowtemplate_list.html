@@ -21,10 +21,16 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center m-3">
                         <div class="btn-group">
-                            <a class="btn btn btn-sm btn-outline-secondary" href=" {% url 'workflow:template-detail' template.id %}" role="button">Details</a>
-                            <a class="btn btn btn-sm btn-outline-secondary" href="#" role="button">Use</a>
+                            <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:template-detail' template.id %}" role="button">Details</a>
+                            <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:workflow-create' template.id %}" role="button">Use</a>
                         </div>
-                        <small class="text-muted">{{ number_of_runs }} Runs</small>
+                        <small class="text-muted">
+                        {% if template.NumRuns == 1 %}
+                            1 Run
+                        {% else %}
+                            {{ template.NumRuns }} Runs
+                        {% endif %}
+                        </small>
                     </div>
                 </div>
             </div>

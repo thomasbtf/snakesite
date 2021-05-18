@@ -15,7 +15,7 @@ WORKFLOW_STATUS_CHOICES = [
     ("TESTING", "Testing"),
     ("QUEUED", "Queued"),
     ("RUNNING", "Running"),
-    ("PRODUCTION", "Available"),
+    ("AVAILABLE", "Available"),
     ("DEPRECATED", "Deprecated"),
 ]
 
@@ -61,6 +61,9 @@ class WorkflowTemplate(models.Model):
     def get_absolute_url(self):
         return reverse("workflow:template-detail", kwargs={'pk' : self.pk})
 
+    @property
+    def NumRuns(self):
+        return sum(Run.objects.filter(workflow_id=self.pk).count() for workflow in Workflow.objects.filter(workflow_template_id = self.pk))
 
 
 class WorkflowTemplateSetting(models.Model):
@@ -96,6 +99,14 @@ class Workflow(models.Model):
 
     def get_absolute_url(self):
         return reverse("workflow:workflow-detail", kwargs={'pk' : self.pk})
+
+    @property
+    def NumRuns(self):
+        return Run.objects.filter(workflow_id=self.pk).count()
+
+    @property
+    def Status(self):
+        return WorkflowStatus.objects.filter(workflow_id=self.pk).order_by('-date_created').first().get_status_display()
 
 
 
@@ -198,7 +209,7 @@ class RunStatus(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.run.__str__()}-{self.status}"
+        return f"{self.run.__str__()}: {self.progress}"
 
 
 class Result(models.Model):
