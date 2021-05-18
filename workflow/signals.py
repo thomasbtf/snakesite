@@ -73,12 +73,14 @@ def workflow_created(sender, instance, created, raw, **kwargs):
             workflow=instance
         )
 
+
 @receiver(pre_delete, sender=Workflow)
 def workflow_deleted(sender, instance , **kwargs):
     """
     Deleted the local representation of the workflow, when the workflow is deleted.
     """
     rmtree(WorkflowSetting.objects.get(workflow_id=instance.pk).storage_location)
+
 
 @receiver(post_save, sender=Run)
 def run_created(sender, instance, created, raw, **kwargs):
@@ -87,6 +89,7 @@ def run_created(sender, instance, created, raw, **kwargs):
     """
     if created:
         RunStatus.objects.create(run=instance)
+        start_snakemake_run(instance.pk)
         
 
 @receiver(pre_delete, sender=Run)

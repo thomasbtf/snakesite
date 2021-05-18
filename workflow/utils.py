@@ -1,5 +1,6 @@
 import os
-
+import subprocess
+import threading
 
 def make_dir(dir:str):
     """A helper-function to create a directroy, if it does not exist.
@@ -36,3 +37,82 @@ def find_file(directory: str, search_file :str) -> str:
     relative_path = shortest_path.replace(directory, "").strip("/")
     
     return relative_path
+
+
+class CommandRunner(object):
+    """Wrapper to use subprocess to run a command. 
+    This is shamelessly stolen from the VanessaSaurus. Greetings if you reading this :)
+    https://github.com/snakemake/snakeface/blob/a13c6d8c63ab1563375d30fd960a28fb05bba57c/snakeface/apps/main/utils.py#L94
+    https://vsoch.github.io/
+    """
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.error = []
+        self.output = []
+        self.retval = None
+
+    def reader(self, stream, context):
+        """Get output and error lines and save to command runner."""
+        # Make sure we save to the correct field
+        lines = self.error
+        if context == "stdout":
+            lines = self.output
+
+        while True:
+            s = stream.readline()
+            if not s:
+                break
+            lines.append(s.decode("utf-8"))
+        stream.close()
+
+    def run_command(
+        self, cmd, env=None, cancel_func=None, cancel_func_kwargs=None, **kwargs
+    ):
+        self.reset()
+        cancel_func_kwargs = cancel_func_kwargs or {}
+
+        # If we need to update the environment
+        # **IMPORTANT: this will include envars from host. Absolutely cannot
+        # be any secrets (they should be defined in the app settings file)
+        envars = os.environ.copy()
+        if env:
+            envars.update(env)
+
+        p = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=envars, **kwargs
+        )
+
+        # Create threads for error and output
+        t1 = threading.Thread(target=self.reader, args=(p.stdout, "stdout"))
+        t1.start()
+        t2 = threading.Thread(target=self.reader, args=(p.stderr, "stderr"))
+        t2.start()
+
+        # Continue running unless cancel function is called
+        counter = 0
+        while True:
+
+            # Check on process for finished or cancelled
+            if p.poll() != None:
+                print("Return value found, stopping.")
+                break
+
+            # Check the cancel function every 100 loops
+            elif (
+                counter % 10000 == 0
+                and cancel_func
+                and cancel_func(**cancel_func_kwargs)
+            ):
+                print("Process is terminated")
+                p.terminate()
+                break
+            counter += 1
+
+        # p.wait()
+        t1.join()
+        t2.join()
+        self.retval = p.returncode
+        return self.output

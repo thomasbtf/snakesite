@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 
 from django.contrib.messages import constants as messages
-from django.core.management.utils import get_random_secret_key
+from .utils import generate_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,16 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-
-def generate_secret_key(out_file: str):
-    """Writes a secrect key given file.
-
-    Args:
-        out_file (str): Path to store key to.
-    """
-    secret_key = get_random_secret_key()
-    with open(out_file, 'w') as of:
-        of.writelines(f"SECRET_KEY = '{secret_key}'")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -56,8 +46,9 @@ INSTALLED_APPS = [
     'workflow.apps.WorkflowConfig',
     'workflow_api.apps.WorkflowApiConfig',
     'rest_framework',
-    "crispy_forms",
-    "crispy_bootstrap5",
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'django_celery_results',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -174,3 +165,8 @@ MESSAGE_TAGS = {
 LOGIN_REDIRECT_URL="workflow:index"
 LOGIN_URL="users:login"
 
+# Celery configurations
+
+CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-cache'
