@@ -44,7 +44,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'workflow.apps.WorkflowConfig',
-    'workflow_api.apps.WorkflowApiConfig',
     'rest_framework',
     'crispy_forms',
     'crispy_bootstrap5',
