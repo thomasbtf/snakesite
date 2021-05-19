@@ -2,6 +2,7 @@ import os
 import subprocess
 import threading
 
+
 def make_dir(dir:str):
     """A helper-function to create a directroy, if it does not exist.
 
@@ -40,7 +41,8 @@ def find_file(directory: str, search_file :str) -> str:
 
 
 class CommandRunner(object):
-    """Wrapper to use subprocess to run a command. 
+    """
+    Wrapper to use subprocess to run a command. 
     This is shamelessly stolen from the VanessaSaurus. Greetings if you reading this :)
     https://github.com/snakemake/snakeface/blob/a13c6d8c63ab1563375d30fd960a28fb05bba57c/snakeface/apps/main/utils.py#L94
     https://vsoch.github.io/
@@ -69,7 +71,7 @@ class CommandRunner(object):
         stream.close()
 
     def run_command(
-        self, cmd, env=None, cancel_func=None, cancel_func_kwargs=None, **kwargs
+        self, cmd, env=None, cancel_func=None, cancel_func_kwargs=None, shell=False, **kwargs
     ):
         self.reset()
         cancel_func_kwargs = cancel_func_kwargs or {}
@@ -82,7 +84,7 @@ class CommandRunner(object):
             envars.update(env)
 
         p = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=envars, **kwargs
+            cmd, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=envars, **kwargs
         )
 
         # Create threads for error and output

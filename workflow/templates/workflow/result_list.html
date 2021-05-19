@@ -1,16 +1,12 @@
 {% extends "workflow/base.html" %}
 {% block title %}Results{% endblock title %}
 {% block nav_item_results %}active{% endblock nav_item_results %}
-
 {% block content %}
-
-
 
     <div class="container">
         <div class="row">
             <!-- left columns -->
             <div class="col-3 list-group list-group-flush scrollarea">
-
                 <!-- run list -->
                 {% for results in object_list %}
                     <a href="#" class="list-group-item list-group-item-action py-3 lh-tight {% block selected_result %}{% endblock selected_result %}" aria-current="true">
@@ -22,54 +18,54 @@
                             {{ results.run.workflow.name }}
                         </div>
                     </a>
+                {% endfor %}
 
+                <!-- pagination -->
+                {% if is_paginated %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mt-4">
 
-                    <!-- pagination -->
-                    {% if is_paginated %}
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center mt-4">
+                            {% if page_obj.has_previous %}
+                            <!-- <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                            </li> -->
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
 
-                                {% if page_obj.has_previous %}
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
                                 <!-- <li class="page-item">
-                                <a class="page-link" href="?page=1" aria-label="First">
-                                <span aria-hidden="true">&laquo;&laquo;</span>
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
                                 </a>
                                 </li> -->
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
 
-                                {% for num in page_obj.paginator.page_range %}
-                                    {% if page_obj.number == num %}
-                                        <li class="page-item active">
-                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                        </li>
-                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                        </li>
-                                    {% endif %}
-                                {% endfor %}
-
-                                {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
-                                    <!-- <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
-                                    <span aria-hidden="true">&raquo;&raquo;</span>
-                                    </a>
-                                    </li> -->
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    {% endif %}
-                {% endfor %}
 
             </div>
             <!-- right column -->

@@ -27,7 +27,7 @@
         </tr>
         <tr>
           <th scope="row">Status</th>
-          <td></td>
+          <td>{{status}}</td>
         </tr>
         <tr>
           <th scope="row">Started by</th>
@@ -64,5 +64,17 @@
         </tr>
       </tbody>
     </table>
+
+    <h2 class="fw-light">Messages</h2>
+    {% for msg in message_list %}
+      <table class="table">
+        <tr>
+          <th scope="row">{{ msg.snakemake_timestamp }}</th>
+          <td>{{ msg.message }}</td>
+        </tr>
+      </table>
+
+
+    {% endfor %}
 
 {% endblock detail_content %}

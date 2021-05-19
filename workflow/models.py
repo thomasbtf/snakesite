@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -23,8 +24,9 @@ RUN_STATUS_CHOICES = [
     ("CREATED", "Created"),
     ("QUEUED", "Queued"),
     ("RUNNING", "Running"),
+    ("REPORTING","Generate Report"),
+    ("FINISHED", "Finished"),
     ("FAILED","Failed"),
-    ("SUCCESSFULL", "Successful"),
 ]
 
 def templates_path():
@@ -78,7 +80,7 @@ class WorkflowTemplateSetting(models.Model):
     storage_location = models.FilePathField(path=templates_path, allow_files= False, allow_folders=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.workflow_template.__str__()} Setting"
+        return f"{self.workflow_template} Setting"
 
     def get_absolute_url(self):
         return reverse("workflow:template-setting", kwargs={'pk' : self.pk})
@@ -121,7 +123,7 @@ class WorkflowSetting(models.Model):
     path_config = models.CharField(max_length=100, blank=False)
 
     def __str__(self) -> str:
-        return f"Settings {self.workflow.__str__()}"
+        return f"Settings {self.workflow}"
 
     def get_absolute_url(self):
         return reverse("workflow:workflow-detail", kwargs={'pk' : self.workflow.pk})
@@ -136,7 +138,7 @@ class WorkflowStatus(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.workflow.__str__()} {self.status}"
+        return f"{self.workflow} {self.status}"
 
 
 def sample_sheet_path(instance, filename):
@@ -157,17 +159,18 @@ class Run(models.Model):
     config = models.FileField(upload_to=config_path, max_length=200, storage=OverwriteStorage(), blank=True, help_text="Optional. Upload a changed config file here. Else the default config from the workflow is used.")
     target = models.CharField(max_length=30, default="all", blank=False, help_text="Target(s) to build by snakemake. May be rules or files.")
     cores = models.PositiveSmallIntegerField(default=6, blank=False, help_text="Number of maximum CPU cores/jobs running in parallel.")
+    args = models.CharField(max_length=200, default="--use-conda", blank=True, help_text="Snakemake command line options to start the run with.")
+    environment_variable = models.CharField(max_length=200, default="", blank=True, help_text="Environment variable(s), that are exported before the run starts. Format: {'muffin' : 'lolz', 'foo' : 'kitty'} ...") # TODO Think about, if this is right
     run_is_private = models.BooleanField(default=False, blank=False, help_text="Whether to show the run and it results publicly.")
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self) -> str:
         return f"Run {self.pk} {self.workflow} {self.target}"
 
 
-def sample_sheet_path(instance, filename):
-    
+def sample_sheet_path(instance, filename):    
     return os.path.join(settings.storage_location, settings.path_sample_sheet)
-
 
 def input_data_path(instance, filename):
     settings = WorkflowSetting.objects.get(workflow_id=instance.run.workflow.id)
@@ -182,21 +185,20 @@ class RunInputFile(models.Model):
 
     def __str__(self) -> str:
         filename = os.path.basename(str(self.input_data))
-        return f"{self.run.__str__()}-{filename}"
+        return f"{self.run}-{filename}"
 
 
 class RunMessage(models.Model):
     """
-    Snakemake stdout of a certain run.
+    Snakemake output of a certain run.
     """
     run = ForeignKey(Run, on_delete=models.CASCADE)
-    level= models.CharField(max_length=30, default="test", blank=False)
-    job = models.CharField(max_length=100, default="test", blank=False)
-    message = models.TextField(max_length=100, default="test", blank=False)
+    message = models.JSONField(blank=False)
+    snakemake_timestamp = models.DateTimeField(blank=False)
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return self.message
+        return f"{self.run} {self.snakemake_timestamp}"
 
 
 class RunStatus(models.Model):
@@ -209,7 +211,7 @@ class RunStatus(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.run.__str__()}: {self.progress}"
+        return f"{self.run} {self.status}"
 
 
 class Result(models.Model):

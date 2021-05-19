@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 from django.contrib.messages import constants as messages
+
 from .utils import generate_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,8 +43,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'users.apps.UsersConfig',
     'workflow.apps.WorkflowConfig',
+    'users.apps.UsersConfig',
+    'wms_api.apps.WmsApiConfig',
     'rest_framework',
     'crispy_forms',
     'crispy_bootstrap5',

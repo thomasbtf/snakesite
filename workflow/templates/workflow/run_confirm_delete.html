@@ -2,7 +2,7 @@
 {% block title %}{{ object.name }}{% endblock title %}
 {% block nav_item_templates %}active{% endblock nav_item_templates %}
 {% block content %}
-    <h1 class="fw-light">Are you sure you want to delete the run "{{ object.id }}"" of workflow "{{ object.workflow.name }}"?</h1>
+    <h1 class="fw-light">Are you sure you want to delete the run "{{ object.id }}" of workflow "{{ object.workflow.name }}"?</h1>
     <p class="lead">All input files and results will be permanently lost!</p>
         <form method="POST">
             {% csrf_token %}

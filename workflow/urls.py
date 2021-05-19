@@ -1,25 +1,16 @@
-from workflow.models import Result
 from django.urls import path
 
-from .views import (IndexView, DashboardView, WorkflowTemplateCreateView,
+from .views import (DashboardView, IndexView, ResultDetailsView,
+                    ResultListView, RunDeleteView, RunDetailView, RunListView,
+                    WorkflowCreateView, WorkflowCreateViewByTemplate,
+                    WorkflowDeleteView, WorkflowDetailView, WorkflowListView,
+                    WorkflowSettingUpdateView, WorkflowTemplateCreateView,
                     WorkflowTemplateDeleteView, WorkflowTemplateDetailView,
                     WorkflowTemplateListView,
                     WorkflowTemplateSettingDetailView,
                     WorkflowTemplateSettingUpdateView,
-                    WorkflowTemplateUpdateView,
-                    WorkflowCreateView,
-                    WorkflowDetailView,
-                    WorkflowListView,
-                    WorkflowDeleteView,
-                    WorkflowUpdateView,
-                    WorkflowSettingUpdateView,
-                    WorkflowCreateViewByTemplate,
-                    create_run_view,
-                    RunDetailView,
-                    RunDeleteView,
-                    RunListView,
-                    ResultListView,
-                    ResultDetailsView,)
+                    WorkflowTemplateUpdateView, WorkflowUpdateView,
+                    create_run_view)
 
 app_name="workflow"
 

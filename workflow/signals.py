@@ -1,14 +1,14 @@
 import os
 from re import template
-from shutil import rmtree, copytree
+from shutil import copytree, rmtree
 
 import git
 from django.conf import settings
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
-from .models import (RunStatus, Workflow, WorkflowSetting, WorkflowStatus, WorkflowTemplate,
-                     WorkflowTemplateSetting, Run, RunMessage)
+from .models import (Run, RunStatus, Workflow, WorkflowSetting, WorkflowStatus,
+                     WorkflowTemplate, WorkflowTemplateSetting)
 from .tasks import start_snakemake_run
 from .utils import find_file, make_dir
 
@@ -97,6 +97,7 @@ def run_deleted(sender, instance , **kwargs):
     """
     When a run is delted, this frees up the workflow.
     """
-    status = WorkflowStatus.objects.get(workflow_id=instance.workflow.pk)
-    status.status = "AVAILABLE"
-    status.save()
+    WorkflowStatus.objects.create(
+        workflow = Workflow.objects.get(pk=instance.workflow.pk),
+        status = "AVAILABLE",
+    )

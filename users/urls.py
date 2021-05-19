@@ -1,7 +1,8 @@
-from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.urls import path
 
-from .views import profile_request, register_request, logout_request, avatar_image_request, rnd_avatar_request
+from .views import (avatar_image_request, logout_request, profile_request,
+                    register_request, rnd_avatar_request)
 
 app_name="users"
 

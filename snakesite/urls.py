@@ -13,13 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 
 urlpatterns = [
     path('', include('workflow.urls', namespace='workflow')),
+    path('api/', include('wms_api.urls', namespace='wms_api')),
     path('user/', include('users.urls', namespace='user')),
     path('admin/', admin.site.urls),
 ]

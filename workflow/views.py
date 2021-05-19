@@ -1,14 +1,15 @@
-import django
-import workflow
-from django.urls import reverse
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  TemplateView, UpdateView, FormView)
-from .forms import InputFilesCreateForm, RunCreateForm
-from .models import Result, WorkflowSetting, WorkflowStatus, WorkflowTemplate, WorkflowTemplateSetting, Workflow, RunInputFile, Run
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
+                                  ListView, TemplateView, UpdateView)
+
+from .forms import InputFilesCreateForm, RunCreateForm
+from .models import (Result, Run, RunInputFile, RunMessage, RunStatus,
+                     Workflow, WorkflowSetting, WorkflowStatus,
+                     WorkflowTemplate, WorkflowTemplateSetting)
 
 
 class IndexView(TemplateView):
@@ -24,12 +25,12 @@ class WorkflowTemplateListView(ListView):
     paginate_by = 6
 
 
-class WorkflowTemplateCreateView(CreateView):
+class WorkflowTemplateCreateView(LoginRequiredMixin, CreateView):
     model = WorkflowTemplate
     fields = ["name", "description", "url", "contributors"]
 
 
-class WorkflowTemplateUpdateView(UpdateView):
+class WorkflowTemplateUpdateView(LoginRequiredMixin, UpdateView):
     model = WorkflowTemplate
     fields = ["name", "description", "url", "contributors"]
 
@@ -38,7 +39,7 @@ class WorkflowTemplateDetailView(DetailView):
     model = WorkflowTemplate
 
 
-class WorkflowTemplateDeleteView(DeleteView):
+class WorkflowTemplateDeleteView(LoginRequiredMixin, DeleteView):
     model = WorkflowTemplate
 
     def get_success_url(self):
@@ -49,12 +50,12 @@ class WorkflowTemplateSettingDetailView(DetailView):
     model = WorkflowTemplateSetting
 
 
-class WorkflowTemplateSettingUpdateView(UpdateView):
+class WorkflowTemplateSettingUpdateView(LoginRequiredMixin, UpdateView):
     model = WorkflowTemplateSetting
     fields = ["path_snakefile", "path_sample_sheet", "path_config"]
 
 
-class WorkflowCreateView(CreateView):
+class WorkflowCreateView(LoginRequiredMixin, CreateView):
     model = Workflow
     fields = ["workflow_template", "name"]
 
@@ -63,7 +64,7 @@ class WorkflowCreateView(CreateView):
         return super().form_valid(form)
 
 
-class WorkflowCreateViewByTemplate(CreateView):
+class WorkflowCreateViewByTemplate(LoginRequiredMixin, CreateView):
     model = Workflow
     fields = ["workflow_template", "name"]
 
@@ -87,7 +88,7 @@ class WorkflowDetailView(DetailView):
         """
         context = super().get_context_data(**kwargs)
         context['settings'] = WorkflowSetting.objects.get(workflow_id=self.object.pk)
-        context['status'] = WorkflowStatus.objects.get(workflow_id=self.object.pk).get_status_display()
+        context['status'] = WorkflowStatus.objects.filter(workflow_id=self.object.pk).order_by('-date_created').first().get_status_display()
         return context
 
 
@@ -96,28 +97,29 @@ class WorkflowListView(ListView):
     paginate_by = 6
 
 
-class WorkflowDeleteView(DeleteView):
+class WorkflowDeleteView(LoginRequiredMixin, DeleteView):
     model = Workflow
 
     def get_success_url(self):
         return reverse('workflow:workflows')
 
 
-class WorkflowUpdateView(UpdateView):
+class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
     model = Workflow
     fields = ["name", "accessible_by"]
     template_name="workflow/workflow_update_form.html"
 
 
-class WorkflowSettingUpdateView(UpdateView):
+class WorkflowSettingUpdateView(LoginRequiredMixin, UpdateView):
     model = WorkflowSetting
     fields = ["path_snakefile", "path_sample_sheet", "path_config"]
     template_name="workflow/workflowsetting_update_form.html"
 
+
 @login_required
 def create_run_view(request, workflow_id):
     workflow_instance = Workflow.objects.get(id = workflow_id)
-    workflow_status = WorkflowStatus.objects.get(workflow_id=workflow_id)
+    workflow_status = WorkflowStatus.objects.filter(workflow_id=workflow_id).order_by('-date_created').first()
     
     workflow_block = workflow_status.status == "RUNNING" or workflow_status.status == "QUEUED"
 
@@ -139,11 +141,13 @@ def create_run_view(request, workflow_id):
                 file_instance.save()
 
             # change status of workflow
-            workflow_status.status = "RUNNING"
-            workflow_status.save()
+            WorkflowStatus.objects.create(
+                workflow = Workflow.objects.get(pk=workflow_id),
+                status = "QUEUED",
+            )
 
             messages.success(request, "Your run has been queued!" )
-            # return redirect("workflow:workflows")
+            return redirect("workflow:run-details", pk=run_instance.pk)
         
         if not run_form.is_valid():
             messages.error(request, "Unsuccessful run start. Please check the sample sheet, config, target or cores.")
@@ -174,11 +178,13 @@ class RunDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(RunDetailView, self).get_context_data(*args, **kwargs)
-        context['run_list'] = Run.objects.all()
+        context['run_list'] = Run.objects.all().order_by('-date_created')
+        context['message_list'] = RunMessage.objects.filter(run_id=self.object.pk).order_by('-snakemake_timestamp')
+        context['status'] = RunStatus.objects.filter(run_id=self.object.pk).order_by('-date_created').first().get_status_display()
         return context
 
 
-class RunDeleteView(DeleteView):
+class RunDeleteView(LoginRequiredMixin, DeleteView):
     model = Run
 
     def get_success_url(self):
@@ -189,11 +195,14 @@ class RunListView(ListView):
     model = Run
     paginate_by = 6
     context_object_name = 'run_list'
+    ordering = ['-date_created']
 
 
 class ResultListView(ListView):
     model = Result
     paginate_by = 6
+    ordering = ['-date_created']
+
 
 class ResultDetailsView(TemplateView):
     template_name = "workflow/index.html"

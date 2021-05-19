@@ -1,20 +1,19 @@
-import django
-from users import utils
-from django.shortcuts import  render, redirect
-from .forms import ProfileCreateForm, ProfileUpdateForm, UserUpdateForm
+import io
+import os
+import random
+
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib import messages 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.shortcuts import redirect, render
 from django.utils.cache import add_never_cache_headers, patch_cache_control
-from django.conf import settings
 
-from .utils import generate_avatar, create_avatar_image
+from .forms import ProfileCreateForm, ProfileUpdateForm, UserUpdateForm
 from .models import Profile
+from .utils import create_avatar_image, generate_avatar
 
-import io
-import random
-import os
 
 def register_request(request):
 	if request.method == "POST":
