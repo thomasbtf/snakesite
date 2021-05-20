@@ -1,5 +1,7 @@
 # Snakesite - Websites for Snakemake
 
+![Status](https://img.shields.io/badge/-under%20development-yellow?style=flat-square)
+
 Snakesite enables interactive execution of Snakemake workflows via a web interface. Users can register, start, monitor workflows and inspect the results of their (and others') executions.
 
 ## Start-up
