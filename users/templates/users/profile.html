@@ -4,7 +4,7 @@
 {% block content %}      
 {% load crispy_forms_tags %}
 
-  <div class="container py-5 pt-0 ">
+<div class="container-fluid bg-light p-4 mb-4">
     <p class= "pb-4">
       <img style="float:left" class="rounded-circle col-md-2 account-img" src="{{ user.profile.image.url }}"/>
       <h1 class="content-heading">{{ user.username }}</h1>
@@ -26,7 +26,6 @@
     <button class="btn btn-outline-primary" type="submit">Update Profile</button>
     </form>
     </p>
-  </div>
-
+</div>
 
 {% endblock content %}  s
