@@ -245,10 +245,6 @@ class Run(models.Model):
         return f"Run {self.pk} {self.workflow} {self.target}"
 
 
-def sample_sheet_path(instance, filename):
-    return os.path.join(settings.storage_location, settings.path_sample_sheet)
-
-
 def input_data_path(instance, filename):
     settings = WorkflowSetting.objects.get(workflow_id=instance.run.workflow.id)
     return f"{settings.storage_location}/data/{filename}"
