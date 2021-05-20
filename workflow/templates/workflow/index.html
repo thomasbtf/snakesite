@@ -1,9 +1,11 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}Snakesite{% endblock title %}
 {% block nav_item_home %}active{% endblock nav_item_home %}
 {% block content %}
 
-  <h1>Welcome to your Snakesite!</h1>
-  <p class="lead text-muted">Modify the index.html file to change this site according to your needs. E.g. add plots from parsing the results of your workflows.</p>
+  <div class="container-fluid bg-light p-4">
+    <h1>Welcome to your Snakesite!</h1>
+    <p class="lead text-muted">Modify the index.html file to change this site according to your needs. E.g. add plots from parsing the results of your workflows.</p>
+  </div>
 
 {% endblock content %}

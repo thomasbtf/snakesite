@@ -2,8 +2,8 @@
 {% block title %}{{ object.workflow_template.name }}{% endblock title %}
 
 {% block template_detail_header %}
-<h1 class="fw-light">{{ object.workflow_template.name }}</h1>
-<p class="lead text-muted">{{ object.workflow_template.description }}</p> 
+  <h1>{{ object.workflow_template.name }}</h1>
+  <p class="lead text-muted">{{ object.workflow_template.description }}</p> 
 {% endblock template_detail_header%}
 
 {% block template_active_settings %}active{% endblock template_active_settings %}
@@ -28,5 +28,5 @@
 {% endblock template_detail_content %}
 
 {% block template_detail_button %}
-  <a href="{% url 'workflow:template-setting-update' object.id %}" class="btn btn-outline-primary my-2">Update settings</a>
+  <a href="{% url 'workflow:template-setting-update' object.id %}" class="btn btn-outline-primary">Update settings</a>
 {% endblock template_detail_button %}

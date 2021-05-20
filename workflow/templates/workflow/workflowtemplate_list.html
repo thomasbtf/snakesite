@@ -1,84 +1,49 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}Templates{% endblock title %}
 {% block nav_item_templates %}active{% endblock nav_item_templates %}
 {% block content %}
-    <h1 class="fw-light">Workflow Templates</h1>
-    <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
-    <p>
-        <a href="{% url 'workflow:template-create' %}" class="btn btn-outline-primary my-2">Create a new workflow template</a>
-    </p>
+    <div class="container-fluid bg-light p-4 mb-4">
+        <h1>Workflow Templates</h1>
+        <p class="lead text-muted">
+            Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.
+        </p>
+        <p>
+            <a href="{% url 'workflow:template-create' %}" class="btn btn-outline-primary">Create a new workflow template</a>
+        </p>
+    </div>
     
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="container-fluid bg-light p-4 mb-4">
+        <h2>Available Templates</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
             {% for template in object_list %}
-            <div class="col">
-                <div class="card h-100 box-shadow">
-                    <!-- Maybe add images later -->
-                    <!-- <img src="..." class="card-img-top" alt="..."> -->
-                    <div class="card-body">
-                        <h5><a class="card-title test-title text-decoration-none text-reset" href="{% url 'workflow:template-detail' template.id %}">{{ template.name }}</a></h5>
-                        <small class="card-subtitle mb-2 text-muted"><a href="{{ template.url }}" class="link-secondary text-decoration-none">{{ template.url }}</a></small>
-                        <p class="card-text mt-2">{{ template.description }}</p>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center m-3">
-                        <div class="btn-group">
-                            <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:template-detail' template.id %}" role="button">Details</a>
-                            <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:workflow-create' template.id %}" role="button">Use</a>
+                <div class="col">
+                    <div class="card h-100 box-shadow">
+                        <!-- TODO Maybe add images later -->
+                        <!-- <img src="..." class="card-img-top" alt="..."> -->
+                        <div class="card-body">
+                            <h5><a class="card-title test-title text-decoration-none text-reset" href="{% url 'workflow:template-detail' template.id %}">{{ template.name }}</a></h5>
+                            <small class="card-subtitle mb-2 text-muted"><a href="{{ template.url }}" class="link-secondary text-decoration-none">{{ template.url }}</a></small>
+                            <p class="card-text mt-2">{{ template.description }}</p>
                         </div>
-                        <small class="text-muted">
-                        {% if template.NumRuns == 1 %}
-                            1 Run
-                        {% else %}
-                            {{ template.NumRuns }} Runs
-                        {% endif %}
-                        </small>
+                        <div class="d-flex justify-content-between align-items-center m-3">
+                            <div class="btn-group">
+                                <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:template-detail' template.id %}" role="button">Details</a>
+                                <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:workflow-create' template.id %}" role="button">Use</a>
+                            </div>
+                            <small class="text-muted">
+                            {% if template.NumRuns == 1 %}
+                                1 Run
+                            {% else %}
+                                {{ template.NumRuns }} Runs
+                            {% endif %}
+                            </small>
+                        </div>
                     </div>
                 </div>
-            </div>
             {% endfor %}
         </div>
 
-        {% if is_paginated %}
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center mt-4">
-            
-            {% if page_obj.has_previous %}
-                <!-- <li class="page-item">
-                    <a class="page-link" href="?page=1" aria-label="First">
-                        <span aria-hidden="true">&laquo;&laquo;</span>
-                    </a>
-                </li> -->
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-            {% endif %}
+        {% include 'workflow/pagination.html' %}
 
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <li class="page-item active">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                <!-- <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
-                        <span aria-hidden="true">&raquo;&raquo;</span>
-                    </a>
-                </li> -->
-            {% endif %}
-            </ul>
-        </nav>
-      {% endif %}
+    </div>
 {% endblock %}

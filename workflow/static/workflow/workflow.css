@@ -1,0 +1,4 @@
+/* adjust rounding from cards, buttons and inputs */
+.card, .btn, .form-control { border-radius: 1; }
+
+/* TODO maybe add class="fw-light" to h */

@@ -1,12 +1,16 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}Create a new template{% endblock title %}
 {% block nav_item_workflow %}active{% endblock nav_item_workflow %}
 {% load crispy_forms_tags %}
 {% block content %}
-  <h1 class="fw-light">Start a new run for {{ workflow_instance.name }}</h1>
-  <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
-  <div class="container p-4">
-    <form method="POST" enctype="multipart/form-data" >
+
+  <div class="container-fluid bg-light p-4 mb-4"> 
+    <h1>Start a new run for {{ workflow_instance.name }}</h1>
+    <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
+  </div> 
+
+  <div class="container-fluid bg-light p-4 mb-4">
+      <form method="POST" enctype="multipart/form-data" >
       {% csrf_token %}
       <fieldset class="form-group">
         {{ file_form|crispy }}
@@ -17,10 +21,14 @@
           {{ workflow_instance.name }} is currently processing a run. Please wait for the old run to be completed before submitting a new one.
         </p>
       {% endif %}
-      <fieldset class="form-group mt-4">
-        <button type="submit" class="btn btn-outline-success" {% if workflow_block %}disabled{% endif %}>Submit</button>
-        <a href="{% url 'workflow:templates' %}" class="btn btn-outline-danger my-2">Cancel</a>
+    
+  </div>
+  <div class="container-fluid bg-light p-4 mb-4">
+      <fieldset class="form-group">
+        <button type="submit" class="btn btn-outline-success" {% if workflow_block %}disabled{% endif %}>Submit run</button>
+        <a href="{% url 'workflow:templates' %}" class="btn btn-outline-danger">Cancel</a>
       </fieldset>
     </form>
   </div>
+
 {% endblock %}

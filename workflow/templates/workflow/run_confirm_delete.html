@@ -1,14 +1,19 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}{{ object.name }}{% endblock title %}
 {% block nav_item_templates %}active{% endblock nav_item_templates %}
 {% block content %}
-    <h1 class="fw-light">Are you sure you want to delete the run "{{ object.id }}" of workflow "{{ object.workflow.name }}"?</h1>
-    <p class="lead">All input files and results will be permanently lost!</p>
+
+    <div class="container-fluid bg-light p-4 mb-4">
+        <h1>Are you sure you want to delete the run "{{ object.id }}" of workflow "{{ object.workflow.name }}"?</h1>
+        <p class="lead">All input files and results will be permanently lost!</p>
+    </div>
+    <div class="container-fluid bg-light p-4 mb-4">
         <form method="POST">
             {% csrf_token %}
-        <fieldset class="form-group">
-            <button type="submit" class="btn btn-outline-danger">Yes, Delete</button>
-            <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-secondary">Cancel</a>
-        </fieldset>
-    </form>
+            <fieldset class="form-group">
+                <button type="submit" class="btn btn-outline-danger">Yes, Delete</button>
+                <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-secondary">Cancel</a>
+            </fieldset>
+        </form>
+    </div>
 {% endblock content %}

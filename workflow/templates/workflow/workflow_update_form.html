@@ -1,16 +1,23 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}{{ object.name }}{% endblock title %}
 {% block nav_item_workflow %}active{% endblock nav_item_workflow %}
 {% load crispy_forms_tags %}
 {% block content %}
 
-  <h1 class="fw-light">Update workflow "{{ object.name }}"</h1>
-  <p class="lead text-muted">{{ object.workflow_template.description }}</p> 
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h1>Update workflow "{{ object.name }}"</h1>
+    <p class="lead text-muted">{{ object.workflow_template.description }}</p> 
+  </div>
+
+  <div class="container-fluid bg-light p-4 mb-4">
+    <form method="post">{% csrf_token %}
+      {{ form|crispy }}
+  </div>
   
-  <form method="post">{% csrf_token %}
-    {{ form|crispy }}
-    <button type="submit" class="btn btn-outline-success">Update workflow</button>
-    <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-danger my-2">Cancel</a>
-  </form>
+  <div class="container-fluid bg-light p-4 mb-4">
+      <button type="submit" class="btn btn-outline-success">Update workflow</button>
+      <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-danger">Cancel</a>
+    </form>
+  </div>
 
 {% endblock content %}

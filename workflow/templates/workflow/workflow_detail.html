@@ -1,74 +1,80 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}{{ object.name }}{% endblock title %}
 {% block nav_item_workflow %}active{% endblock nav_item_workflow %}
 {% block content %}
 
-  <h1 class="fw-light">{{ object.name }}</h1>
-  <p class="lead text-muted">{{ object.workflow_template.description }}</p> 
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h1>{{ object.name }}</h1>
+    <p class="lead text-muted">{{ object.workflow_template.description }}</p> 
+    <a href="{% url 'workflow:run-create' object.id %}" class="btn btn-outline-success">Start a run</a>
+  </div>
 
-  <a href="{% url 'workflow:run-create' object.id %}" class="btn btn-outline-success my-2">Start a run</a>
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h2>Information</h2>
+    <table class="table">
+      <tbody>
+        <tr>
+          <th scope="row">Template</th>
+          <td><a href="{% url 'workflow:template-detail' object.workflow_template.id %}" class="text-decoration-none text-reset">{{ object.workflow_template.name }}</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Workflow ID</th>
+          <td>{{ object.id }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Owner</th>
+          <td>
+              {{ object.created_by.get_username }}<br>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Accessible by</th>
+          <td>
+            {% for contributor in object.accessible_by.all %}
+              {{contributor.get_username}} <br>
+            {% endfor %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Date Created</th>
+          <td>{{ object.date_created }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Number of runs</th>
+          <td>{{ object.NumRuns }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Path to Snakefile</th>
+          <td>{{ settings.path_snakefile }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Path to Sample Sheet</th>
+          <td>{{ settings.path_sample_sheet }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Path to Config</th>
+          <td>{{ settings.path_config }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Status</th>
+          <td>{{ status }}</td>
+        </tr>
 
-  
-  <h2 class="fw-light">Information</h2>
-  <table class="table">
-    <tbody>
-      <tr>
-        <th scope="row">Template</th>
-        <td><a href="{% url 'workflow:template-detail' object.workflow_template.id %}" class="text-decoration-none text-reset">{{ object.workflow_template.name }}</a></td>
-      </tr>
-      <tr>
-        <th scope="row">Workflow ID</th>
-        <td>{{ object.id }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Owner</th>
-        <td>
-            {{ object.created_by.get_username }}<br>
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">Accessible by</th>
-        <td>
-          {% for contributor in object.accessible_by.all %}
-            {{contributor.get_username}} <br>
-          {% endfor %}
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">Date Created</th>
-        <td>{{ object.date_created }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Number of runs</th>
-        <td>{{ object.NumRuns }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Path to Snakefile</th>
-        <td>{{ settings.path_snakefile }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Path to Sample Sheet</th>
-        <td>{{ settings.path_sample_sheet }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Path to Config</th>
-        <td>{{ settings.path_config }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Status</th>
-        <td>{{ status }}</td>
-      </tr>
+      </tbody>
+    </table>
+  </div>
 
-    </tbody>
-  </table>
-
-  <a href="{% url 'workflow:workflow-update' object.id %}" class="btn btn-outline-primary my-2">Update workflow</a>
-  <a href="{% url 'workflow:workflow-setting-update' settings.id %}" class="btn btn-outline-primary my-2">Update paths</a>
-  <a href="{% url 'workflow:workflow-delete' object.id %}" class="btn btn-outline-danger my-2">Delete workflow</a>
-  <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-secondary my-2">Back to all workflows</a>
+  <div class="container-fluid bg-light p-4 mb-4">
+    <a href="{% url 'workflow:workflow-update' object.id %}" class="btn btn-outline-primary">Update workflow</a>
+    <a href="{% url 'workflow:workflow-setting-update' settings.id %}" class="btn btn-outline-primary">Update paths</a>
+    <a href="{% url 'workflow:workflow-delete' object.id %}" class="btn btn-outline-danger">Delete workflow</a>
+    <a href="{% url 'workflow:workflows' %}" class="btn btn-outline-secondary">Back to all workflows</a>
+  </div>
 
 
-  <h2 class="fw-light mt-5">Runs</h2>
-  Some overview over the runs. Maybe with link to results.
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h2>Runs</h2>
+    Some overview over the runs. Maybe with link to results.
+  </div>
 
 {% endblock content %}

@@ -43,6 +43,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'base.apps.BaseConfig',
     'workflow.apps.WorkflowConfig',
     'users.apps.UsersConfig',
     'wms_api.apps.WmsApiConfig',

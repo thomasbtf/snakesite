@@ -1,5 +1,5 @@
 {% extends "workflow/run_list.html" %}
-{% block title %}{{ object.name }}{% endblock title %}
+{% block title %}Run {{ object.id }} of {{ object.workflow.name}}{% endblock title %}
 
 {% block selected_run %}
   {% if run.id == object.id %}
@@ -7,22 +7,26 @@
   {% endif %}
 {% endblock selected_run %}
 
+{% block right_size %}9{% endblock right_size %}
+{% block left_size %}3{% endblock left_size %}
+
 {% block detail_content %}
-
-    <h1 class="fw-light">Run {{ object.id }}</h1>
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h1 >Run {{ object.id }}</h1>
     <p class="lead text-muted">in {{ object.workflow.name}}</p> 
+    
+    <a href="#" class="btn btn-outline-primary">Restart</a>
+    <a href="#" class="btn btn-outline-warning">Cancel</a>
+    <a href="{% url 'workflow:run-delete' object.id %}" class="btn btn-outline-danger">Delete</a>
+    <a href="#" class="btn btn-outline-secondary">Back</a>
+  </div>
 
-    <a href="#" class="btn btn-outline-primary my-2">Restart</a>
-    <a href="#" class="btn btn-outline-warning my-2">Cancel</a>
-    <a href="{% url 'workflow:run-delete' object.id %}" class="btn btn-outline-danger my-2">Delete</a>
-    <a href="#" class="btn btn-outline-secondary my-2">Back</a>
-
-    <h2 class="fw-light">Information</h2>
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h2>Information</h2>
     <table class="table">
         <tr>
           <th scope="row">Progress</th>
           <td>
-
           </td>
         </tr>
         <tr>
@@ -64,8 +68,11 @@
         </tr>
       </tbody>
     </table>
+  </div>
 
-    <h2 class="fw-light">Messages</h2>
+  {% if message_list %}
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h2>Messages</h2>
     {% for msg in message_list %}
       <table class="table">
         <tr>
@@ -73,8 +80,8 @@
           <td>{{ msg.message }}</td>
         </tr>
       </table>
-
-
     {% endfor %}
+  </div>
+  {% endif %}
 
 {% endblock detail_content %}

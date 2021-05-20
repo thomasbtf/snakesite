@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
-                                  ListView, TemplateView, UpdateView)
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  TemplateView, UpdateView)
 
 from .forms import InputFilesCreateForm, RunCreateForm
 from .models import (Result, Run, RunInputFile, RunMessage, RunStatus,

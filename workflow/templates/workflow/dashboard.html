@@ -1,9 +1,13 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}Snakesite Dashboard{% endblock title %}
 {% block nav_item_dashboard %}active{% endblock nav_item_dashboard %}
 {% block content %}
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1>Dashboard</h1>
+  <div class="container-fluid bg-light p-4 mb-4">
+    <h1>Dashboard</h1>
+  </div>
+  <div class="container-fluid bg-light p-4 mb-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom">
+        <h2>Runs Over Time</h2>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -15,10 +19,11 @@
           </button>
         </div>
       </div>
-
       <canvas class="my-4 w-100 chartjs-render-monitor" id="myChart" width="876" height="369" style="display: block; width: 876px; height: 369px;"></canvas>
-      
-      <h1>Run Surveillance</h1>
+    </div>
+    
+    <div class="container-fluid bg-light p-4 mb-4">
+      <h2>Run Surveillance</h2>
       <div class="table-responsive">
         <table class="table table-sm">
           <thead class="thead-dark">
@@ -173,4 +178,5 @@
           </tbody>
         </table>
       </div>
+    </div>
 {% endblock content %}

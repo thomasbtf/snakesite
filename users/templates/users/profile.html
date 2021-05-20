@@ -1,4 +1,4 @@
-{% extends "workflow/base.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}Profile{% endblock title %}
 {% block nav_item_profile %}active{% endblock nav_item_profile %}
 {% block content %}      
@@ -18,7 +18,7 @@
 
     <p style="clear:both" class ="pt-5">
     
-    <form method="POST" enctype="multipart/form-data" class=>
+    <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ u_form|crispy }}                    
     {{ p_form|crispy }}  

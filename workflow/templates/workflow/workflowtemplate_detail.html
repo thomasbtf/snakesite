@@ -1,51 +1,51 @@
 {% extends "workflow/workflowtemplate_detail_base.html" %}
 
-{% block template_detail_header %}
-  <h1 class="fw-light">{{ object.name }}</h1>
-  <p class="lead text-muted">{{ object.description }}</p> 
-{% endblock template_detail_header%}
+  {% block template_detail_header %}
+    <h1 class>{{ object.name }}</h1>
+    <p class="lead text-muted">{{ object.description }}</p> 
+  {% endblock template_detail_header%}
 
-{% block template_active_information %}active{% endblock template_active_information %}
+  {% block template_active_information %}active{% endblock template_active_information %}
 
-{% block template_detail_content %}
-  <table class="table">
-    <tbody>
-      <tr>
-        <th scope="row">Template ID</th>
-        <td>{{ object.id }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Homepage</th>
-        <td><a href="{{ object.url }}" class="text-decoration-none text-reset">{{ object.url }}</a></td>
-      </tr>
-      <tr>
-        <th scope="row">Owner</th>
-        <td>
-          {% for owner in object.owner.all %}
-            {{owner.get_username}}<br>
-          {% endfor %}
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">Contributors</th>
-        <td>
-          {% for contributor in object.contributors.all %}
-            {{contributor.get_username}} <br>
-          {% endfor %}
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">Date Created</th>
-        <td>{{ object.date_created }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Date Modified</th>
-        <td>{{ object.date_modified }}</td>
-      </tr>
-    </tbody>
-  </table>
-{% endblock template_detail_content %}
+  {% block template_detail_content %}
+    <table class="table">
+      <tbody>
+        <tr>
+          <th scope="row">Template ID</th>
+          <td>{{ object.id }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Homepage</th>
+          <td><a href="{{ object.url }}" class="text-decoration-none text-reset">{{ object.url }}</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Owner</th>
+          <td>
+            {% for owner in object.owner.all %}
+              {{owner.get_username}}<br>
+            {% endfor %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Contributors</th>
+          <td>
+            {% for contributor in object.contributors.all %}
+              {{contributor.get_username}} <br>
+            {% endfor %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Date Created</th>
+          <td>{{ object.date_created }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Date Modified</th>
+          <td>{{ object.date_modified }}</td>
+        </tr>
+      </tbody>
+    </table>
+  {% endblock template_detail_content %}
 
-{% block template_detail_button %}
-  <a href="{% url 'workflow:template-update' object.id %}" class="btn btn-outline-primary my-2">Update template</a>
-{% endblock template_detail_button %}
+  {% block template_detail_button %}
+    <a href="{% url 'workflow:template-update' object.id %}" class="btn btn-outline-primary">Update template</a>
+  {% endblock template_detail_button %}
