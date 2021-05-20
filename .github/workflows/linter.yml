@@ -29,3 +29,4 @@ jobs:
           VALIDATE_JSCPD: False
           VALIDATE_PYTHON_ISORT: False
           VALIDATE_PYTHON_MYPY: False
+          VALIDATE_HTML: False
