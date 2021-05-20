@@ -25,3 +25,7 @@ jobs:
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_FLAKE8_CONFIG_FILE: setup.cfg
+          VALIDATE_JSCPD: False
+          VALIDATE_PYTHON_ISORT: False
+          VALIDATE_PYTHON_MYPY: False
