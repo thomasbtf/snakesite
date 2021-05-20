@@ -31,6 +31,12 @@
                                 <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:workflow-create' template.id %}" role="button">Use</a>
                             </div>
                             <small class="text-muted">
+                            {% if template.NumWorkflows == 1 %}
+                                1 Workflow
+                            {% else %}
+                                {{ template.NumWorkflows }} Workflows
+                            {% endif %}
+
                             {% if template.NumRuns == 1 %}
                                 1 Run
                             {% else %}

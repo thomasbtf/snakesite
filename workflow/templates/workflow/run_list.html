@@ -10,14 +10,31 @@
                 <div class="container-fluid p-2 bg-light p-4 mb-4">
                     <!-- run list -->
                     {% for run in run_list %}
-                        <a href="{% url 'workflow:run-details' run.id %}" class="list-group-item list-group-item-action py-3 lh-tight {% block selected_run %}{% endblock selected_run %}" aria-current="true">
-                            <div class="d-flex w-100 align-items-center justify-content-between">
+                        <a href="{% url 'workflow:run-details' run.id %}" class="list-group-item list-group-item-action py-3 {% block selected_run %}{% endblock selected_run %}" aria-current="true">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    {% if run.Status == "Created" %}
+                                    {% elif run.Status == "Queued" %}
+                                    {% elif run.Status == "Testing" %}
+                                    {% elif run.Status == "Running" %}
+                                    {% elif run.Status == "Generate Report" %}
+                                    {% elif run.Status == "Finished" %}
+                                    {% elif run.Status == "Failed" %}
+                                    {% endif %}
+                                    {{run.Status}}
+                                </div>
+                                <div class="col-sm-5"><strong>{{ run.id }} </strong> of {{ run.workflow.name }}</div>
+                                <div class="col-sm-5">{{ run.date_created }}</div>
+                              </div>
+                            
+                            
+                            <!-- <div class="d-flex w-100 align-items-center justify-content-between">
                                 <strong class="mb-1">{{ run.id }}</strong>
                                 <small>{{ run.date_created }}</small>
                             </div>
                             <div class="col-10 mb-1 small">
                                 {{ run.workflow.name }}
-                            </div>
+                            </div> -->
                         </a>
                     {% endfor %}
                     {% include 'workflow/pagination.html' %}

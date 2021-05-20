@@ -23,6 +23,7 @@ WORKFLOW_STATUS_CHOICES = [
 RUN_STATUS_CHOICES = [
     ("CREATED", "Created"),
     ("QUEUED", "Queued"),
+    ("TESTING", "Testing"),
     ("RUNNING", "Running"),
     ("REPORTING", "Generate Report"),
     ("FINISHED", "Finished"),
@@ -72,10 +73,14 @@ class WorkflowTemplate(models.Model):
         return reverse("workflow:template-detail", kwargs={"pk": self.pk})
 
     @property
+    def NumWorkflows(self):
+        return Workflow.objects.filter(id=self.pk).count()
+
+    @property
     def NumRuns(self):
         return sum(
-            Run.objects.filter(workflow_id=self.pk).count()
-            for workflow in Workflow.objects.filter(workflow_template_id=self.pk)
+            child.NumRuns
+            for child in Workflow.objects.filter(workflow_template_id=self.pk)
         )
 
 
