@@ -17,8 +17,6 @@ from .models import (
     Result,
     Run,
     RunInputFile,
-    RunMessage,
-    RunStatus,
     Workflow,
     WorkflowSetting,
     WorkflowStatus,
@@ -78,40 +76,18 @@ class WorkflowCreateView(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
 
-
-class WorkflowCreateViewByTemplate(LoginRequiredMixin, CreateView):
-    model = Workflow
-    fields = ["workflow_template", "name"]
-
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        return super().form_valid(form)
-
     def get_initial(self):
-        workflow_template = get_object_or_404(
-            WorkflowTemplate, pk=self.kwargs.get("template_id")
-        )
-        return {
-            "workflow_template": workflow_template,
-        }
+        if self.kwargs.get("template_id"):
+            workflow_template = get_object_or_404(
+                WorkflowTemplate, pk=self.kwargs.get("template_id")
+            )
+            return {
+                "workflow_template": workflow_template,
+            }
 
 
 class WorkflowDetailView(DetailView):
     model = Workflow
-
-    def get_context_data(self, **kwargs):
-        """
-        This has been overridden to add `settings` to the template context
-        """
-        context = super().get_context_data(**kwargs)
-        context["settings"] = WorkflowSetting.objects.get(workflow_id=self.object.pk)
-        context["status"] = (
-            WorkflowStatus.objects.filter(workflow_id=self.object.pk)
-            .order_by("-date_created")
-            .first()
-            .get_status_display()
-        )
-        return context
 
 
 class WorkflowListView(ListView):
@@ -139,23 +115,18 @@ class WorkflowSettingUpdateView(LoginRequiredMixin, UpdateView):
 
 
 @login_required
-def create_run_view(request, workflow_id):
+def run_create_view(request, workflow_id):
     workflow_instance = Workflow.objects.get(id=workflow_id)
-    workflow_status = (
-        WorkflowStatus.objects.filter(workflow_id=workflow_id)
-        .order_by("-date_created")
-        .first()
-    )
 
-    workflow_block = (
-        workflow_status.status == "RUNNING" or workflow_status.status == "QUEUED"
+    workflow_blocked = (
+        workflow_instance.Status == "RUNNING" or workflow_instance.Status == "QUEUED"
     )
 
     if request.method == "POST":
         run_form = RunCreateForm(request.POST, request.FILES)
         file_form = InputFilesCreateForm(request.POST, request.FILES)
 
-        if run_form.is_valid() and file_form.is_valid() and not workflow_block:
+        if run_form.is_valid() and file_form.is_valid() and not workflow_blocked:
             # complete the run form
             run_instance = run_form.save(commit=False)
             run_instance.workflow = workflow_instance
@@ -188,7 +159,7 @@ def create_run_view(request, workflow_id):
                 request, "Unsuccessful run start. Please check the input file."
             )
 
-        if workflow_block:
+        if workflow_blocked:
             messages.error(
                 request,
                 (
@@ -205,8 +176,8 @@ def create_run_view(request, workflow_id):
         "run_form": run_form,
         "file_form": file_form,
         "workflow_instance": workflow_instance,
-        "workflow_status": workflow_status,
-        "workflow_block": workflow_block,
+        "workflow_status": workflow_instance.Status,
+        "workflow_block": workflow_blocked,
     }
 
     return render(request, "workflow/run_form.html", context)
@@ -218,15 +189,6 @@ class RunDetailView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(RunDetailView, self).get_context_data(*args, **kwargs)
         context["run_list"] = Run.objects.all().order_by("-date_created")
-        context["message_list"] = RunMessage.objects.filter(
-            run_id=self.object.pk
-        ).order_by("-snakemake_timestamp")
-        context["status"] = (
-            RunStatus.objects.filter(run_id=self.object.pk)
-            .order_by("-date_created")
-            .first()
-            .get_status_display()
-        )
         return context
 
 

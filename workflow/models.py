@@ -143,6 +143,10 @@ class Workflow(models.Model):
             .get_status_display()
         )
 
+    @property
+    def Setting(self):
+        return WorkflowSetting.objects.get(workflow_id=self.pk)
+
 
 class WorkflowSetting(models.Model):
     """
@@ -231,7 +235,7 @@ class Run(models.Model):
         max_length=200,
         default="",
         blank=True,
-        help_text="Environment variable(s), that are exported before the run starts. Format: {'muffin' : 'lolz', ...}",
+        help_text="Environment variable(s), that are exported before the run starts. Format: {'foo' : 'bar', ...}",
     )  # TODO Think about, if this is right
     run_is_private = models.BooleanField(
         default=False,
@@ -243,6 +247,21 @@ class Run(models.Model):
 
     def __str__(self) -> str:
         return f"Run {self.pk} {self.workflow} {self.target}"
+
+    @property
+    def Messages(self):
+        return RunMessage.objects.filter(run_id=self.pk).order_by(
+            "-snakemake_timestamp"
+        )
+
+    @property
+    def Status(self):
+        return (
+            RunStatus.objects.filter(run_id=self.pk)
+            .order_by("-date_created")
+            .first()
+            .get_status_display()
+        )
 
 
 def input_data_path(instance, filename):
