@@ -18,122 +18,399 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Run',
+            name="Run",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sample_sheet', models.FileField(help_text='Required. Upload your sample sheet here. Paths to input data files must start with "data/".', max_length=200, storage=workflow.storage.OverwriteStorage(), upload_to=workflow.models.sample_sheet_path)),
-                ('config', models.FileField(blank=True, help_text='Optional. Upload a changed config file here. Else the default config from the workflow is used.', max_length=200, storage=workflow.storage.OverwriteStorage(), upload_to=workflow.models.config_path)),
-                ('target', models.CharField(default='all', help_text='Target(s) to build by snakemake. May be rules or files.', max_length=30)),
-                ('cores', models.PositiveSmallIntegerField(default=6, help_text='Number of maximum CPU cores/jobs running in parallel.')),
-                ('args', models.CharField(default='--use-conda', help_text='Snakemake command line options to start the run with.', max_length=200)),
-                ('environment_variable', models.CharField(default='', help_text='Environment variable(s), that are exported before the run starts. Format: NAME=VALUE NAME=VALUE ...', max_length=200)),
-                ('run_is_private', models.BooleanField(default=False, help_text='Whether to show the run and it results publicly.')),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "sample_sheet",
+                    models.FileField(
+                        help_text='Required. Upload your sample sheet here. Paths to input data files must start with "data/".',
+                        max_length=200,
+                        storage=workflow.storage.OverwriteStorage(),
+                        upload_to=workflow.models.sample_sheet_path,
+                    ),
+                ),
+                (
+                    "config",
+                    models.FileField(
+                        blank=True,
+                        help_text="Optional. Upload a changed config file here. Else the default config from the workflow is used.",
+                        max_length=200,
+                        storage=workflow.storage.OverwriteStorage(),
+                        upload_to=workflow.models.config_path,
+                    ),
+                ),
+                (
+                    "target",
+                    models.CharField(
+                        default="all",
+                        help_text="Target(s) to build by snakemake. May be rules or files.",
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "cores",
+                    models.PositiveSmallIntegerField(
+                        default=6,
+                        help_text="Number of maximum CPU cores/jobs running in parallel.",
+                    ),
+                ),
+                (
+                    "args",
+                    models.CharField(
+                        default="--use-conda",
+                        help_text="Snakemake command line options to start the run with.",
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "environment_variable",
+                    models.CharField(
+                        default="",
+                        help_text="Environment variable(s), that are exported before the run starts. Format: NAME=VALUE NAME=VALUE ...",
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "run_is_private",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Whether to show the run and it results publicly.",
+                    ),
+                ),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "uuid",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Workflow',
+            name="Workflow",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='The name of your workflow. E.g. "SARS-CoV-2 Production".', max_length=60)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('accessible_by', models.ManyToManyField(blank=True, related_name='accessible_by', to=settings.AUTH_USER_MODEL)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='workflow_owner', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text='The name of your workflow. E.g. "SARS-CoV-2 Production".',
+                        max_length=60,
+                    ),
+                ),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "accessible_by",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="accessible_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="workflow_owner",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='WorkflowTemplate',
+            name="WorkflowTemplate",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=60, unique=True)),
-                ('description', models.TextField(max_length=400)),
-                ('url', models.URLField()),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_modified', models.DateTimeField(auto_now=True)),
-                ('contributors', models.ManyToManyField(blank=True, related_name='workflow_template_contributors', to=settings.AUTH_USER_MODEL)),
-                ('owner', models.ManyToManyField(related_name='workflow_template_owner', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=60, unique=True)),
+                ("description", models.TextField(max_length=400)),
+                ("url", models.URLField()),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                ("date_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "contributors",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="workflow_template_contributors",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ManyToManyField(
+                        related_name="workflow_template_owner",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='WorkflowTemplateSetting',
+            name="WorkflowTemplateSetting",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('path_snakefile', models.CharField(max_length=100)),
-                ('path_sample_sheet', models.CharField(max_length=100)),
-                ('path_config', models.CharField(max_length=100)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('storage_location', models.FilePathField(allow_files=False, allow_folders=True, path=workflow.models.templates_path)),
-                ('workflow_template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.workflowtemplate')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("path_snakefile", models.CharField(max_length=100)),
+                ("path_sample_sheet", models.CharField(max_length=100)),
+                ("path_config", models.CharField(max_length=100)),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "storage_location",
+                    models.FilePathField(
+                        allow_files=False,
+                        allow_folders=True,
+                        path=workflow.models.templates_path,
+                    ),
+                ),
+                (
+                    "workflow_template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="workflow.workflowtemplate",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='WorkflowStatus',
+            name="WorkflowStatus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('CREATED', 'Created'), ('TESTING', 'Testing'), ('QUEUED', 'Queued'), ('RUNNING', 'Running'), ('AVAILABLE', 'Available'), ('DEPRECATED', 'Deprecated')], default='CREATED', max_length=15)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('workflow', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.workflow')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("CREATED", "Created"),
+                            ("TESTING", "Testing"),
+                            ("QUEUED", "Queued"),
+                            ("RUNNING", "Running"),
+                            ("AVAILABLE", "Available"),
+                            ("DEPRECATED", "Deprecated"),
+                        ],
+                        default="CREATED",
+                        max_length=15,
+                    ),
+                ),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "workflow",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="workflow.workflow",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='WorkflowSetting',
+            name="WorkflowSetting",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('storage_location', models.FilePathField(allow_files=False, allow_folders=True, path=workflow.models.workflows_path)),
-                ('path_snakefile', models.CharField(max_length=100)),
-                ('path_sample_sheet', models.CharField(max_length=100)),
-                ('path_config', models.CharField(max_length=100)),
-                ('workflow', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.workflow')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "storage_location",
+                    models.FilePathField(
+                        allow_files=False,
+                        allow_folders=True,
+                        path=workflow.models.workflows_path,
+                    ),
+                ),
+                ("path_snakefile", models.CharField(max_length=100)),
+                ("path_sample_sheet", models.CharField(max_length=100)),
+                ("path_config", models.CharField(max_length=100)),
+                (
+                    "workflow",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="workflow.workflow",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='workflow',
-            name='workflow_template',
-            field=models.ForeignKey(help_text='Select the template you want to use.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='workflow.workflowtemplate'),
+            model_name="workflow",
+            name="workflow_template",
+            field=models.ForeignKey(
+                help_text="Select the template you want to use.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="workflow.workflowtemplate",
+            ),
         ),
         migrations.CreateModel(
-            name='RunStatus',
+            name="RunStatus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('CREATED', 'Created'), ('QUEUED', 'Queued'), ('RUNNING', 'Running'), ('FAILED', 'Failed'), ('SUCCESSFULL', 'Successful')], default='CREATED', max_length=15)),
-                ('progress', models.PositiveSmallIntegerField(default=0)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('run', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.run')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("CREATED", "Created"),
+                            ("QUEUED", "Queued"),
+                            ("RUNNING", "Running"),
+                            ("FAILED", "Failed"),
+                            ("SUCCESSFULL", "Successful"),
+                        ],
+                        default="CREATED",
+                        max_length=15,
+                    ),
+                ),
+                ("progress", models.PositiveSmallIntegerField(default=0)),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="workflow.run"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='RunMessage',
+            name="RunMessage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.JSONField()),
-                ('snakemake_timestamp', models.DateTimeField()),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('run', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.run')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", models.JSONField()),
+                ("snakemake_timestamp", models.DateTimeField()),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="workflow.run"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='RunInputFile',
+            name="RunInputFile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('input_data', models.FileField(help_text='Required. The input data for your run.', max_length=200, storage=workflow.storage.OverwriteStorage(), upload_to=workflow.models.input_data_path)),
-                ('run', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.run')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "input_data",
+                    models.FileField(
+                        help_text="Required. The input data for your run.",
+                        max_length=200,
+                        storage=workflow.storage.OverwriteStorage(),
+                        upload_to=workflow.models.input_data_path,
+                    ),
+                ),
+                (
+                    "run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="workflow.run"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='run',
-            name='workflow',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.workflow'),
+            model_name="run",
+            name="workflow",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="workflow.workflow"
+            ),
         ),
         migrations.CreateModel(
-            name='Result',
+            name="Result",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('path_results', models.FilePathField(allow_files=False, allow_folders=True, path=workflow.models.results_path)),
-                ('path_index_report', models.FilePathField(path=workflow.models.results_path)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('run', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.run')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "path_results",
+                    models.FilePathField(
+                        allow_files=False,
+                        allow_folders=True,
+                        path=workflow.models.results_path,
+                    ),
+                ),
+                (
+                    "path_index_report",
+                    models.FilePathField(path=workflow.models.results_path),
+                ),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="workflow.run"
+                    ),
+                ),
             ],
         ),
     ]

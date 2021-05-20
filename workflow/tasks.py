@@ -16,10 +16,7 @@ def set_run_status(run_pk: int, status: str):
         run_pk (int): Primary key of run
         status (str): Status of run to set
     """
-    RunStatus.objects.create(
-        run = Run.objects.get(pk=run_pk),
-        status = status
-    )
+    RunStatus.objects.create(run=Run.objects.get(pk=run_pk), status=status)
 
 
 def set_workflow_status(run_pk: int, status: str):
@@ -31,8 +28,7 @@ def set_workflow_status(run_pk: int, status: str):
         status (str): Status of run to set
     """
     WorkflowStatus.objects.create(
-        workflow = Run.objects.get(pk=run_pk).workflow,
-        status = status
+        workflow=Run.objects.get(pk=run_pk).workflow, status=status
     )
 
 
@@ -49,7 +45,9 @@ def start_snakemake_run(run_pk: int) -> None:
     set_run_status(run_pk, "QUEUED")
 
     run_instance = Run.objects.get(pk=run_pk)
-    worklow_setting_instance = WorkflowSetting.objects.get(workflow=run_instance.workflow)
+    worklow_setting_instance = WorkflowSetting.objects.get(
+        workflow=run_instance.workflow
+    )
 
     cores = run_instance.cores
     workdir = worklow_setting_instance.storage_location
@@ -59,15 +57,32 @@ def start_snakemake_run(run_pk: int) -> None:
     env_vars = ast.literal_eval(run_instance.environment_variable)
 
     # TODO add more validation of user input
-    not_to_use_cli_args = ["--snakefile", "--cores", "--directory", "---wms-monitor", "--wms-monitor-arg"]
+    not_to_use_cli_args = [
+        "--snakefile",
+        "--cores",
+        "--directory",
+        "---wms-monitor",
+        "--wms-monitor-arg",
+    ]
 
     illegal_values = [illegal for illegal in args if illegal in not_to_use_cli_args]
     if illegal_values:
-        raise ValueError("Please do use the following cli argument(s): {}".format(illegal_values))
+        raise ValueError(
+            "Please do use the following cli argument(s): {}".format(illegal_values)
+        )
 
-    args = f"snakemake --wms-monitor http://127.0.0.1:8000/api --wms-monitor-arg run_id={run_instance.id} workflow_id={run_instance.workflow.id} --snakefile '{snakefile}' --cores {cores} --directory '{workdir}' --use-conda {target}"
+    args = (
+        f"snakemake --wms-monitor http://127.0.0.1:8000/api --wms-monitor-arg run_id={run_instance.id} ",
+        f"workflow_id={run_instance.workflow.id} --snakefile '{snakefile}' --cores {cores} ",
+        f"--directory '{workdir}' --use-conda {target}",
+    )
 
-    chain(snakemake_dry_run.si(run_pk, args, env_vars), snakemake_run.si(run_pk, args, env_vars), snakemake_report.si(run_pk, args, env_vars), success.si(run_pk)).apply_async()
+    chain(
+        snakemake_dry_run.si(run_pk, args, env_vars),
+        snakemake_run.si(run_pk, args, env_vars),
+        snakemake_report.si(run_pk, args, env_vars),
+        success.si(run_pk),
+    ).apply_async()
 
 
 @shared_task(bind=True)
@@ -77,7 +92,7 @@ def snakemake_dry_run(self, run_pk: int, args: str, env_vars: dict) -> int:
     Args:
         run_pk (int): Primary key of run
         args (str): Arguments to snakemake with
-        env_vars (dict): Environment variabels 
+        env_vars (dict): Environment variabels
 
     Returns:
         int: Returncode of snakemake execution
@@ -85,11 +100,10 @@ def snakemake_dry_run(self, run_pk: int, args: str, env_vars: dict) -> int:
     set_run_status(run_pk, "TESTING")
     set_workflow_status(run_pk, "RUNNING")
 
-
     args += " -npr"
     args = shlex.split(args)
     runner = CommandRunner()
-    runner.run_command(cmd = args, env=env_vars)
+    runner.run_command(cmd=args, env=env_vars)
 
     if runner.retval == 1:
         set_run_status(run_pk, "FAILED")
@@ -100,13 +114,13 @@ def snakemake_dry_run(self, run_pk: int, args: str, env_vars: dict) -> int:
 
 
 @shared_task(bind=True)
-def snakemake_run(self, run_pk:int, args:str, env_vars: dict) -> int:
+def snakemake_run(self, run_pk: int, args: str, env_vars: dict) -> int:
     """Starts a snakemake run.
 
     Args:
         run_pk (int): Primary key of run
         args (str): Arguments to snakemake with
-        env_vars (dict): Environment variabels 
+        env_vars (dict): Environment variabels
 
     Returns:
         int: Returncode of snakemake execution
@@ -126,13 +140,13 @@ def snakemake_run(self, run_pk:int, args:str, env_vars: dict) -> int:
 
 
 @shared_task(bind=True)
-def snakemake_report(self, run_pk:int, args:str, env_vars: dict) -> int:
+def snakemake_report(self, run_pk: int, args: str, env_vars: dict) -> int:
     """Generates snakemake report.
 
     Args:
         run_pk (int): Primary key of run
         args (str): Arguments to snakemake with
-        env_vars (dict): Environment variabels 
+        env_vars (dict): Environment variabels
 
     Returns:
         int: Returncode of snakemake execution
@@ -153,7 +167,7 @@ def snakemake_report(self, run_pk:int, args:str, env_vars: dict) -> int:
 
 
 @shared_task()
-def success(run_pk:int) -> None:
+def success(run_pk: int) -> None:
     """
     Frees up workflow and run.
 

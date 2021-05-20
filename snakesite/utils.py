@@ -8,5 +8,5 @@ def generate_secret_key(out_file: str):
         out_file (str): Path to store key to.
     """
     secret_key = get_random_secret_key()
-    with open(out_file, 'w') as of:
+    with open(out_file, "w") as of:
         of.writelines(f"SECRET_KEY = '{secret_key}'")

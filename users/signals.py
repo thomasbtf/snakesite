@@ -16,7 +16,8 @@ def create_profile(sender, instance, created, **kwargs):
         abs_img = "".join([os.path.join(settings.AVATARS, str(instance.pk)), ".svg"])
         rel_img = "".join(["avatars/", str(instance.pk), ".svg"])
         create_avatar_image(abs_img)
-        Profile.objects.create(user=instance, image = rel_img)
+        Profile.objects.create(user=instance, image=rel_img)
+
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, created, **kwargs):

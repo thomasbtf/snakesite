@@ -46,4 +46,3 @@ def generate_avatar(seed):
         clothe_graphic_type=r(pa.ClotheGraphicType),
     )
     return avatar
-

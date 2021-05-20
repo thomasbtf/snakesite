@@ -1,5 +1,4 @@
-""" 
-View module for handel snakemakes WMSLogger
+"""View module for handel snakemakes WMSLogger
 
 Snakemakes docs interpretation:
     A WMS monitor is a workflow management system logger to enable
@@ -31,30 +30,30 @@ class ServiceInfoView(APIView):
 
     Snakemakes interpretation
         Docs:
-            Snakemake gets the status of Panoptes [server]. Snakemake continues 
-            to run if the status (json['status']) is 'running'. In all other 
+            Snakemake gets the status of Panoptes [server]. Snakemake continues
+            to run if the status (json['status']) is 'running'. In all other
             cases snakemake exits with an error message.
 
             Snakemakes method: GET
             Data: json
-        
+
         Implementation:
             Service Info ensures that the server is running. We exit on error
             if this isn't the case, so the function can be called in init.
-        
+
         Handels:
             (required) "status" == "running" in json
             (required) 200 Response
     """
-        
+
     def get(self, request):
 
-
         data = {
-            # TODO add more data from https://ga4gh.github.io/workflow-execution-service-schemas/docs/#section/Authorization-and-Authentication
+            # TODO add more data from
+            # https://ga4gh.github.io/workflow-execution-service-schemas/docs/#section/Authorization-and-Authentication
             # TODO replace with actual version
-            "status" : "running",
-            "version": "0.1.0"
+            "status": "running",
+            "version": "0.1.0",
         }
 
         return Response(data=data, status=200)
@@ -62,11 +61,11 @@ class ServiceInfoView(APIView):
 
 class CreateWorkflowView(APIView):
     """
-    Registers run with snakemake. 
+    Registers run with snakemake.
 
     Snakemakes interpretation
         Docs:
-            Snakemake gets a unique id/name str(uuid.uuid4()) for each workflow 
+            Snakemake gets a unique id/name str(uuid.uuid4()) for each workflow
             triggered.
 
             Snakemakes method: GET
@@ -100,7 +99,7 @@ class CreateWorkflowView(APIView):
         # run was not found
         # TODO maybe create a new run. but make this sense?
         return Response(status=401)
-        
+
 
 class UpdateWorkflowStatusView(APIView):
     """
@@ -108,7 +107,7 @@ class UpdateWorkflowStatusView(APIView):
 
     Snakemakes interpretation
         Docs:
-            Snakemake posts updates for workflows/jobs. The dictionary sent contains the log 
+            Snakemake posts updates for workflows/jobs. The dictionary sent contains the log
             message dictionary, the current timestamp and the unique id/name of the workflow.
 
             Snakemakes method: POST
@@ -116,7 +115,7 @@ class UpdateWorkflowStatusView(APIView):
 
             {
                 # the log message dictionary
-                'msg': repr(msg), 
+                'msg': repr(msg),
                 'timestamp': time.asctime(),
                 'id': id
             }
@@ -136,8 +135,10 @@ class UpdateWorkflowStatusView(APIView):
     def post(self, request):
         run_instance = get_object_or_404(Run, uuid=request.POST.get("id"))
         RunMessage.objects.create(
-            run = run_instance,
-            message = json.loads(request.POST.get("msg", {})),
-            snakemake_timestamp = datetime.strptime(request.POST.get("timestamp"), "%a %b %d %H:%M:%S %Y")
+            run=run_instance,
+            message=json.loads(request.POST.get("msg", {})),
+            snakemake_timestamp=datetime.strptime(
+                request.POST.get("timestamp"), "%a %b %d %H:%M:%S %Y"
+            ),
         )
         return Response(status=200)

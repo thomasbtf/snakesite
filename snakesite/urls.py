@@ -19,10 +19,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('', include('workflow.urls', namespace='workflow')),
-    path('api/', include('wms_api.urls', namespace='wms_api')),
-    path('user/', include('users.urls', namespace='user')),
-    path('admin/', admin.site.urls),
+    path("", include("workflow.urls", namespace="workflow")),
+    path("api/", include("wms_api.urls", namespace="wms_api")),
+    path("user/", include("users.urls", namespace="user")),
+    path("admin/", admin.site.urls),
 ]
 
 if settings.DEBUG:
