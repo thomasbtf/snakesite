@@ -22,6 +22,8 @@ from .views import (
     WorkflowTemplateUpdateView,
     WorkflowUpdateView,
     run_create_view,
+    MessageDetailView,
+    TicksView
 )
 
 app_name = "workflow"
@@ -85,4 +87,5 @@ urlpatterns = [
     path("run/<int:pk>/delete/", RunDeleteView.as_view(), name="run-delete"),
     path("results/", ResultListView.as_view(), name="results"),
     path("results/<int:pk>/", ResultDetailsView.as_view(), name="results-details"),
+    path("messages/<int:pk>/", MessageDetailView.as_view(), name="run-messages"),
 ]

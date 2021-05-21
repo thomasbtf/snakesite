@@ -11,6 +11,8 @@ from django.urls import reverse
 from .storage import OverwriteStorage
 from .utils import make_dir
 
+from collections import defaultdict
+
 WORKFLOW_STATUS_CHOICES = [
     ("CREATED", "Created"),
     ("TESTING", "Testing"),
@@ -267,6 +269,14 @@ class Run(models.Model):
             .first()
             .get_status_display()
         )
+
+    @property
+    def MessageHeaders(self):
+        headers=defaultdict(int)
+        for msg in self.runmessage_set.all().order_by("-snakemake_timestamp"):
+            for key, _ in msg.message.items():
+                headers[key] += 1
+        return headers
 
 
 def input_data_path(instance, filename):

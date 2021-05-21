@@ -6,17 +6,10 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
-from .models import (
-    Run,
-    RunStatus,
-    Workflow,
-    WorkflowSetting,
-    WorkflowStatus,
-    WorkflowTemplate,
-    WorkflowTemplateSetting,
-)
+from .models import (Run, RunMessage, RunStatus, Workflow, WorkflowSetting,
+                     WorkflowStatus, WorkflowTemplate, WorkflowTemplateSetting)
 from .tasks import start_snakemake_run
-from .utils import find_file, make_dir
+from .utils import find_file, make_dir, broadcast_message
 
 
 @receiver(post_save, sender=WorkflowTemplate)
@@ -101,9 +94,19 @@ def run_created(sender, instance, created, raw, **kwargs):
 @receiver(pre_delete, sender=Run)
 def run_deleted(sender, instance, **kwargs):
     """
-    When a run is delted, this frees up the workflow.
+    When a run is deleted, this frees up the workflow.
     """
     WorkflowStatus.objects.create(
         workflow=Workflow.objects.get(pk=instance.workflow.pk),
         status="AVAILABLE",
     )
+
+
+@receiver(post_save, sender=RunMessage)
+def runmessages_created(sender, instance, created, raw, **kwargs):
+    """
+    When a run message is created, this updates the message table
+    """
+    group_name = str(instance.run.id)
+    msg = [instance.message]
+    broadcast_message(msg, group_name)

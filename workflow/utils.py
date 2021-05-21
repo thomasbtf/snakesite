@@ -1,6 +1,10 @@
+import json
 import os
 import subprocess
 import threading
+
+import channels.layers
+from asgiref.sync import async_to_sync
 
 
 def make_dir(dir: str):
@@ -129,3 +133,18 @@ class CommandRunner(object):
         t2.join()
         self.retval = p.returncode
         return self.output
+
+
+def broadcast_message(msg:list[dict], group_name:str):
+    """Helper function to broadcast a message to a group.
+
+    Args:
+        msg (list[dict]): Message to broadcast
+        group_name (str): Name of the group to broadcast to
+    """
+    channel_layer =  channels.layers.get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name, {
+            "type": 'new_message',
+            "content": json.dumps(msg),
+        })

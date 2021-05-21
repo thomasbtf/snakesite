@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels"
 ]
 
 MIDDLEWARE = [
@@ -172,3 +173,12 @@ LOGIN_URL = "users:login"
 CELERY_BROKER_URL = "amqp://localhost"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULT_BACKEND = "django-cache"
+
+ASGI_APPLICATION = "snakesite.asgi.application"
+
+if DEBUG:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
+    }
