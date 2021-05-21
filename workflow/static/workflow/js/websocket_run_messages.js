@@ -1,12 +1,12 @@
-var run_id = document.getElementById("socket_script").getAttribute("run_id");
+const RUN_ID = document.getElementById('socket_script').getAttribute('run_id');
 
 // open the websocket
-var ws_url = 'ws://' + window.location.host + '/ws/messages/' + run_id + '/';
+var ws_url = 'ws://' + window.location.host + '/ws/messages/' + RUN_ID + '/';
 var messagesSocket = new WebSocket(ws_url);
 
 messagesSocket.onmessage = function(event) {
     var data = JSON.parse(event.data);
-    console.log("WebSocket message received:", event);
+    console.log('WebSocket message received:', event);
     addRows()
 };
 
@@ -15,7 +15,7 @@ messagesSocket.onopen = function open() {
 };
 
 if (messagesSocket.readyState == WebSocket.OPEN) {
-    console.log("Opening WebSocket");
+    console.log('Opening WebSocket');
     messagesSocket.onopen();
 }
 
