@@ -74,13 +74,13 @@ class WorkflowTemplate(models.Model):
 
     @property
     def NumWorkflows(self):
-        return Workflow.objects.filter(id=self.pk).count()
+        return self.workflow_set.count()
 
     @property
     def NumRuns(self):
         return sum(
             child.NumRuns
-            for child in Workflow.objects.filter(workflow_template_id=self.pk)
+            for child in self.workflow_set.all()
         )
 
 
@@ -137,12 +137,12 @@ class Workflow(models.Model):
 
     @property
     def NumRuns(self):
-        return Run.objects.filter(workflow_id=self.pk).count()
+        return self.run_set.count()
 
     @property
     def Status(self):
         return (
-            WorkflowStatus.objects.filter(workflow_id=self.pk)
+            self.workflowstatus_set.all()
             .order_by("-date_created")
             .first()
             .get_status_display()
@@ -255,14 +255,14 @@ class Run(models.Model):
 
     @property
     def Messages(self):
-        return RunMessage.objects.filter(run_id=self.pk).order_by(
+        return self.runmessage_set.all().order_by(
             "-snakemake_timestamp"
         )
 
     @property
     def Status(self):
         return (
-            RunStatus.objects.filter(run_id=self.pk)
+            self.runstatus_set.all()
             .order_by("-date_created")
             .first()
             .get_status_display()
@@ -305,7 +305,6 @@ class RunMessage(models.Model):
 
     def __str__(self) -> str:
         return f"{self.run} {self.snakemake_timestamp}"
-
 
 class RunStatus(models.Model):
     """

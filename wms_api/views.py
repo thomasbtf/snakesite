@@ -22,6 +22,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from workflow.models import Run, RunMessage
+from rest_framework import status
 
 
 class ServiceInfoView(APIView):
@@ -56,7 +57,7 @@ class ServiceInfoView(APIView):
             "version": "0.1.0",
         }
 
-        return Response(data=data, status=200)
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class CreateWorkflowView(APIView):
@@ -94,11 +95,11 @@ class CreateWorkflowView(APIView):
 
             # "id" is the id from snakemake
             data = {"id": run_instance.uuid}
-            return Response(data=data, status=200)
+            return Response(data=data, status=status.HTTP_200_OK)
 
         # run was not found
         # TODO maybe create a new run. but make this sense?
-        return Response(status=401)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UpdateWorkflowStatusView(APIView):
@@ -141,4 +142,4 @@ class UpdateWorkflowStatusView(APIView):
                 request.POST.get("timestamp"), "%a %b %d %H:%M:%S %Y"
             ),
         )
-        return Response(status=200)
+        return Response(status=status.HTTP_200_OK)
