@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "channels"
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -177,8 +177,4 @@ CELERY_RESULT_BACKEND = "django-cache"
 ASGI_APPLICATION = "snakesite.asgi.application"
 
 if DEBUG:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer"
-        }
-    }
+    CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}

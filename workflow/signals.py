@@ -6,10 +6,18 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
-from .models import (Run, RunMessage, RunStatus, Workflow, WorkflowSetting,
-                     WorkflowStatus, WorkflowTemplate, WorkflowTemplateSetting)
+from .models import (
+    Run,
+    RunMessage,
+    RunStatus,
+    Workflow,
+    WorkflowSetting,
+    WorkflowStatus,
+    WorkflowTemplate,
+    WorkflowTemplateSetting,
+)
 from .tasks import start_snakemake_run
-from .utils import find_file, make_dir, broadcast_message
+from .utils import broadcast_message, find_file, make_dir
 
 
 @receiver(post_save, sender=WorkflowTemplate)

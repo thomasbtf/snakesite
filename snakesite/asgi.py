@@ -16,11 +16,11 @@ import workflow.routing
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "snakesite.settings")
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            workflow.routing.websocket_urlpatterns
-        )
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(
+            URLRouter(workflow.routing.websocket_urlpatterns)
+        ),
+    }
+)

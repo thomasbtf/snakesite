@@ -1,5 +1,6 @@
 import os
 import uuid
+from collections import defaultdict
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,8 +11,6 @@ from django.urls import reverse
 
 from .storage import OverwriteStorage
 from .utils import make_dir
-
-from collections import defaultdict
 
 WORKFLOW_STATUS_CHOICES = [
     ("CREATED", "Created"),
@@ -80,10 +79,7 @@ class WorkflowTemplate(models.Model):
 
     @property
     def NumRuns(self):
-        return sum(
-            child.NumRuns
-            for child in self.workflow_set.all()
-        )
+        return sum(child.NumRuns for child in self.workflow_set.all())
 
 
 class WorkflowTemplateSetting(models.Model):
@@ -257,9 +253,7 @@ class Run(models.Model):
 
     @property
     def Messages(self):
-        return self.runmessage_set.all().order_by(
-            "-snakemake_timestamp"
-        )
+        return self.runmessage_set.all().order_by("-snakemake_timestamp")
 
     @property
     def Status(self):
@@ -272,7 +266,7 @@ class Run(models.Model):
 
     @property
     def MessageHeaders(self):
-        headers=defaultdict(int)
+        headers = defaultdict(int)
         for msg in self.runmessage_set.all().order_by("-snakemake_timestamp"):
             for key, _ in msg.message.items():
                 headers[key] += 1
@@ -315,6 +309,7 @@ class RunMessage(models.Model):
 
     def __str__(self) -> str:
         return f"{self.run} {self.snakemake_timestamp}"
+
 
 class RunStatus(models.Model):
     """

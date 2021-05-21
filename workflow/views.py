@@ -221,6 +221,3 @@ class ResultDetailsView(TemplateView):
 class MessageDetailView(DeleteView):
     model = Run
     template_name = "workflow/message_detail.html"
-
-class TicksView(TemplateView):
-    template_name = "workflow/ticks.html"

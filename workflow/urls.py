@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     DashboardView,
     IndexView,
+    MessageDetailView,
     ResultDetailsView,
     ResultListView,
     RunDeleteView,
@@ -22,8 +23,6 @@ from .views import (
     WorkflowTemplateUpdateView,
     WorkflowUpdateView,
     run_create_view,
-    MessageDetailView,
-    TicksView
 )
 
 app_name = "workflow"
