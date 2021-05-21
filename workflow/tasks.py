@@ -32,6 +32,17 @@ def set_workflow_status(run_pk: int, status: str):
     )
 
 
+def cancel_run(self, run_pk):
+    """Helper function to set failed run.
+
+    Args:
+        run_pk (int): Primary key of run
+    """
+    set_run_status(run_pk, "FAILED")
+    set_workflow_status(run_pk, "AVAILABLE")
+    self.request.chain = None
+
+
 def start_snakemake_run(run_pk: int) -> None:
     """
     Starts snakemake run pipeline: dry-run -> run -> report
@@ -54,7 +65,10 @@ def start_snakemake_run(run_pk: int) -> None:
     snakefile = os.path.join(workdir, worklow_setting_instance.path_snakefile)
     target = run_instance.target
     args = shlex.split(run_instance.args)
-    env_vars = ast.literal_eval(run_instance.environment_variable)
+    if run_instance.environment_variable:
+        env_vars = ast.literal_eval(run_instance.environment_variable)
+    else:
+        env_vars = {}
 
     # TODO add more validation of user input
     not_to_use_cli_args = [
@@ -77,6 +91,8 @@ def start_snakemake_run(run_pk: int) -> None:
         f"--directory '{workdir}' --use-conda {target}",
     )
 
+    args = "".join(args)
+
     chain(
         snakemake_dry_run.si(run_pk, args, env_vars),
         snakemake_run.si(run_pk, args, env_vars),
@@ -97,20 +113,22 @@ def snakemake_dry_run(self, run_pk: int, args: str, env_vars: dict) -> int:
     Returns:
         int: Returncode of snakemake execution
     """
-    set_run_status(run_pk, "TESTING")
-    set_workflow_status(run_pk, "RUNNING")
+    try:
+        set_run_status(run_pk, "TESTING")
+        set_workflow_status(run_pk, "RUNNING")
 
-    args += " -npr"
-    args = shlex.split(args)
-    runner = CommandRunner()
-    runner.run_command(cmd=args, env=env_vars)
+        args += " -npr"
+        args = shlex.split(args)
+        runner = CommandRunner()
+        runner.run_command(cmd=args, env=env_vars)
 
-    if runner.retval == 1:
-        set_run_status(run_pk, "FAILED")
-        set_workflow_status(run_pk, "AVAILABLE")
-        self.request.chain = None
+        if runner.retval == 1:
+            cancel_run(self, run_pk)
 
-    return runner.retval
+        return runner.retval
+
+    except:  # noqa: E722
+        cancel_run(self, run_pk)
 
 
 @shared_task(bind=True)
@@ -125,18 +143,20 @@ def snakemake_run(self, run_pk: int, args: str, env_vars: dict) -> int:
     Returns:
         int: Returncode of snakemake execution
     """
-    set_run_status(run_pk, "RUNNING")
+    try:
+        set_run_status(run_pk, "RUNNING")
 
-    args = shlex.split(args)
-    runner = CommandRunner()
-    runner.run_command(args, env=env_vars)
+        args = shlex.split(args)
+        runner = CommandRunner()
+        runner.run_command(args, env=env_vars)
 
-    if runner.retval == 1:
-        set_run_status(run_pk, "FAILED")
-        set_workflow_status(run_pk, "AVAILABLE")
-        self.request.chain = None
+        if runner.retval == 1:
+            cancel_run(self, run_pk)
 
-    return runner.retval
+        return runner.retval
+
+    except:  # noqa: E722
+        cancel_run(self, run_pk)
 
 
 @shared_task(bind=True)
@@ -151,19 +171,22 @@ def snakemake_report(self, run_pk: int, args: str, env_vars: dict) -> int:
     Returns:
         int: Returncode of snakemake execution
     """
-    set_run_status(run_pk, "REPORTING")
+    try:
+        set_run_status(run_pk, "REPORTING")
 
-    args = shlex.split(args)
-    runner = CommandRunner()
-    runner.run_command(args, env=env_vars)
+        args = shlex.split(args)
+        runner = CommandRunner()
+        runner.run_command(args, env=env_vars)
 
-    args += " --report report.zip"
-    if runner.retval == 1:
-        set_run_status(run_pk, "FAILED")
-        set_workflow_status(run_pk, "AVAILABLE")
-        self.request.chain = None
+        args += " --report report.zip"
 
-    return runner.retval
+        if runner.retval == 1:
+            cancel_run(self, run_pk)
+
+        return runner.retval
+
+    except:  # noqa: E722
+        cancel_run(self, run_pk)
 
 
 @shared_task()

@@ -3,13 +3,13 @@ from django.urls import path
 from .views import (
     DashboardView,
     IndexView,
+    MessageDetailView,
     ResultDetailsView,
     ResultListView,
     RunDeleteView,
     RunDetailView,
     RunListView,
     WorkflowCreateView,
-    WorkflowCreateViewByTemplate,
     WorkflowDeleteView,
     WorkflowDetailView,
     WorkflowListView,
@@ -22,7 +22,7 @@ from .views import (
     WorkflowTemplateSettingUpdateView,
     WorkflowTemplateUpdateView,
     WorkflowUpdateView,
-    create_run_view,
+    run_create_view,
 )
 
 app_name = "workflow"
@@ -61,7 +61,7 @@ urlpatterns = [
     path("workflow/new/", WorkflowCreateView.as_view(), name="workflow-create"),
     path(
         "workflow/new/<int:template_id>/",
-        WorkflowCreateViewByTemplate.as_view(),
+        WorkflowCreateView.as_view(),
         name="workflow-create",
     ),
     path("workflow/<int:pk>/", WorkflowDetailView.as_view(), name="workflow-detail"),
@@ -81,9 +81,10 @@ urlpatterns = [
         name="workflow-setting-update",
     ),
     path("runs/", RunListView.as_view(), name="runs"),
-    path("run/new/<int:workflow_id>/", create_run_view, name="run-create"),
+    path("run/new/<int:workflow_id>/", run_create_view, name="run-create"),
     path("run/<int:pk>/", RunDetailView.as_view(), name="run-details"),
     path("run/<int:pk>/delete/", RunDeleteView.as_view(), name="run-delete"),
     path("results/", ResultListView.as_view(), name="results"),
     path("results/<int:pk>/", ResultDetailsView.as_view(), name="results-details"),
+    path("messages/<int:pk>/", MessageDetailView.as_view(), name="run-messages"),
 ]

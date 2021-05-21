@@ -72,7 +72,6 @@ def rnd_avatar_request(request):
             [os.path.join(os.path.basename(settings.AVATARS), str(seed)), ".svg"]
         )
         create_avatar_image(abs_img, seed=seed)
-        print(instance.image)
         instance.image = rel_img
         instance.save()
         # messages.success(request, "Your avatar hast been updated!" )

@@ -1,5 +1,6 @@
 import os
 import uuid
+from collections import defaultdict
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -23,6 +24,7 @@ WORKFLOW_STATUS_CHOICES = [
 RUN_STATUS_CHOICES = [
     ("CREATED", "Created"),
     ("QUEUED", "Queued"),
+    ("TESTING", "Testing"),
     ("RUNNING", "Running"),
     ("REPORTING", "Generate Report"),
     ("FINISHED", "Finished"),
@@ -72,11 +74,12 @@ class WorkflowTemplate(models.Model):
         return reverse("workflow:template-detail", kwargs={"pk": self.pk})
 
     @property
+    def NumWorkflows(self):
+        return self.workflow_set.count()
+
+    @property
     def NumRuns(self):
-        return sum(
-            Run.objects.filter(workflow_id=self.pk).count()
-            for workflow in Workflow.objects.filter(workflow_template_id=self.pk)
-        )
+        return sum(child.NumRuns for child in self.workflow_set.all())
 
 
 class WorkflowTemplateSetting(models.Model):
@@ -132,16 +135,20 @@ class Workflow(models.Model):
 
     @property
     def NumRuns(self):
-        return Run.objects.filter(workflow_id=self.pk).count()
+        return self.run_set.count()
 
     @property
     def Status(self):
         return (
-            WorkflowStatus.objects.filter(workflow_id=self.pk)
+            self.workflowstatus_set.all()
             .order_by("-date_created")
             .first()
             .get_status_display()
         )
+
+    @property
+    def Setting(self):
+        return WorkflowSetting.objects.get(workflow_id=self.pk)
 
 
 class WorkflowSetting(models.Model):
@@ -231,7 +238,7 @@ class Run(models.Model):
         max_length=200,
         default="",
         blank=True,
-        help_text="Environment variable(s), that are exported before the run starts. Format: {'muffin' : 'lolz', ...}",
+        help_text="Environment variable(s), that are exported before the run starts. Format: {'foo' : 'bar', ...}",
     )  # TODO Think about, if this is right
     run_is_private = models.BooleanField(
         default=False,
@@ -243,6 +250,27 @@ class Run(models.Model):
 
     def __str__(self) -> str:
         return f"Run {self.pk} {self.workflow} {self.target}"
+
+    @property
+    def Messages(self):
+        return self.runmessage_set.all().order_by("-snakemake_timestamp")
+
+    @property
+    def Status(self):
+        return (
+            self.runstatus_set.all()
+            .order_by("-date_created")
+            .first()
+            .get_status_display()
+        )
+
+    @property
+    def MessageHeaders(self):
+        headers = defaultdict(int)
+        for msg in self.runmessage_set.all().order_by("-snakemake_timestamp"):
+            for key, _ in msg.message.items():
+                headers[key] += 1
+        return headers
 
 
 def input_data_path(instance, filename):
