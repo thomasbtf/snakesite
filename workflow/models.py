@@ -345,7 +345,7 @@ class RunProgress(models.Model):
     """
 
     run = ForeignKey(Run, on_delete=models.CASCADE)
-    done = models.PositiveIntegerField(blank=False)
+    done = models.PositiveIntegerField()
     total = models.PositiveIntegerField(blank=False)
     percent = models.FloatField(blank=False)
     snakemake_timestamp = models.DateTimeField(blank=False)
