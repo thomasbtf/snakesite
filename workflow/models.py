@@ -5,12 +5,11 @@ from collections import defaultdict
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.fields import PositiveSmallIntegerField
 from django.db.models.fields.related import ForeignKey
 from django.urls import reverse
 
 from .storage import OverwriteStorage
-from .utils import make_dir, broadcast_message
+from .utils import make_dir
 
 WORKFLOW_STATUS_CHOICES = [
     ("CREATED", "Created"),
@@ -344,7 +343,7 @@ class RunProgress(models.Model):
     """
     Progress of a run.
     """
-    
+
     run = ForeignKey(Run, on_delete=models.CASCADE)
     done = models.PositiveIntegerField(blank=False)
     total = models.PositiveIntegerField(blank=False)
@@ -360,6 +359,7 @@ class Result(models.Model):
     """
     Results of a run.
     """
+
     run = ForeignKey(Run, on_delete=models.CASCADE)
     path_results = models.FilePathField(
         path=results_path, allow_files=False, allow_folders=True

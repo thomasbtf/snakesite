@@ -149,11 +149,10 @@ class UpdateWorkflowStatusView(APIView):
                 run=run_instance,
                 done=msg.get("done", ""),
                 total=msg.get("total", ""),
-                percent=round(int(msg.get("done", 0))/int(msg.get("total", 1))) * 100,
+                percent=round(int(msg.get("done", 0)) / int(msg.get("total", 1))) * 100,
                 snakemake_timestamp=datetime.strptime(
                     request.POST.get("timestamp"), "%a %b %d %H:%M:%S %Y"
                 ),
             )
-
 
         return Response(status=status.HTTP_200_OK)

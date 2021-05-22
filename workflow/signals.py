@@ -114,7 +114,7 @@ def run_deleted(sender, instance, **kwargs):
 @receiver(post_save, sender=RunMessage)
 def runmessages_created(sender, instance, created, raw, **kwargs):
     """
-    When a run message is created, this updates the message table 
+    When a run message is created, this updates the message table
     """
     if created:
         group_name = str(instance.run.id)
@@ -137,7 +137,7 @@ def runstatus_created(sender, instance, created, raw, **kwargs):
 
 
 @receiver(post_save, sender=RunProgress)
-def runstatus_created(sender, instance, created, raw, **kwargs):
+def runprogress_created(sender, instance, created, raw, **kwargs):
     """
     When a run progress is created, this updates the frontend
     """

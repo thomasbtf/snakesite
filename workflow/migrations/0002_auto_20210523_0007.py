@@ -7,24 +7,37 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workflow', '0001_initial'),
+        ("workflow", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='runstatus',
-            name='progress',
+            model_name="runstatus",
+            name="progress",
         ),
         migrations.CreateModel(
-            name='RunProgress',
+            name="RunProgress",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('done', models.PositiveIntegerField()),
-                ('total', models.PositiveIntegerField()),
-                ('percent', models.FloatField()),
-                ('snakemake_timestamp', models.DateTimeField()),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('run', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.run')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("done", models.PositiveIntegerField()),
+                ("total", models.PositiveIntegerField()),
+                ("percent", models.FloatField()),
+                ("snakemake_timestamp", models.DateTimeField()),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="workflow.run"
+                    ),
+                ),
             ],
         ),
     ]
