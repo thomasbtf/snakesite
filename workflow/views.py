@@ -31,7 +31,7 @@ class IndexView(TemplateView):
 
 class DashboardView(ListView):
     model = Run
-    ordering = ['-date_created']
+    ordering = ["-date_created"]
     template_name = "workflow/dashboard.html"
 
 

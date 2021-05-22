@@ -55,14 +55,28 @@ class WorkflowTemplate(models.Model):
     Data about the workflow itself.
     """
 
-    name = models.CharField(max_length=60, blank=False, unique=True, help_text="The name of the workflow template.")
-    description = models.TextField(max_length=400, blank=False, help_text="A short description of the aim of the workflow.")
-    url = models.URLField(blank=False, help_text="URL to the GitHub repository of the workflow.")
+    name = models.CharField(
+        max_length=60,
+        blank=False,
+        unique=True,
+        help_text="The name of the workflow template.",
+    )
+    description = models.TextField(
+        max_length=400,
+        blank=False,
+        help_text="A short description of the aim of the workflow.",
+    )
+    url = models.URLField(
+        blank=False, help_text="URL to the GitHub repository of the workflow."
+    )
     owner = models.ManyToManyField(
         User, blank=False, related_name="workflow_template_owner"
     )
     contributors = models.ManyToManyField(
-        User, blank=True, related_name="workflow_template_contributors", help_text="Indication who contributed to this workflow."
+        User,
+        blank=True,
+        related_name="workflow_template_contributors",
+        help_text="Indication who contributed to this workflow.",
     )
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
     date_modified = models.DateTimeField(auto_now=True, blank=False)
