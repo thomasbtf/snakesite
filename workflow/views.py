@@ -29,7 +29,9 @@ class IndexView(TemplateView):
     template_name = "workflow/index.html"
 
 
-class DashboardView(TemplateView):
+class DashboardView(ListView):
+    model = Run
+    ordering = ['-date_created']
     template_name = "workflow/dashboard.html"
 
 

@@ -25,40 +25,44 @@
     <div class="container-fluid bg-light p-4 mb-4">
       <h2>Run Surveillance</h2>
       <div class="table-responsive">
-        <table class="table table-sm">
+        <table class="table table-sm table-hover align-middle">
           <thead class="thead-dark">
             <tr>
               <th>Run</th>
               <th>Date</th>
+              <th>Workflow</th>
               <th>Status</th>
               <th>Progress</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>1,003</td>
-              <td>data</td>
-              <td>rich</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar w-0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>information</td>
-              <td>placeholder</td>
+              <td>999</td>
+              <td>2021-12-31</td>
+              <td>Example</td>
+              <td>Queued</td>
               <td> 
                 <div class="progress">
-                  <div class="progress-bar bg-warning text-dark progress-bar-striped progress-bar-animated w-25 " role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  <div class="progress-bar bg-info w-0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
               </td>
             </tr>
             <tr>
-              <td>1,004</td>
-              <td>text</td>
-              <td>random</td>
+              <td>999</td>
+              <td>2021-12-31</td>
+              <td>Example</td>
+              <td>Testing</td>
+              <td> 
+                <div class="progress">
+                  <div class="progress-bar bg-info w-0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>999</td>
+              <td>2021-12-31</td>
+              <td>Example</td>
+              <td>Running</td>
               <td> 
                 <div class="progress">
                   <div class="progress-bar bg-warning text-dark progress-bar-striped progress-bar-animated w-50 " role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
@@ -66,9 +70,10 @@
               </td>
             </tr>
             <tr>
-              <td>1,005</td>
-              <td>dashboard</td>
-              <td>irrelevant</td>
+              <td>999</td>
+              <td>2021-12-31</td>
+              <td>Example</td>
+              <td>Running</td>
               <td> 
                 <div class="progress">
                   <div class="progress-bar bg-warning text-dark progress-bar-striped progress-bar-animated w-75 " role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
@@ -76,105 +81,65 @@
               </td>
             </tr>
             <tr>
-              <td>1,006</td>
-              <td>dashboard</td>
-              <td>illustrative</td>
-              <td>
+              <td>999</td>
+              <td>2021-12-31</td>
+              <td>Example</td>
+              <td>Finished</td>
+              <td> 
                 <div class="progress">
                   <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
               </td>
             </tr>
             <tr>
-              <td>1,007</td>
-              <td>placeholder</td>
-              <td>tabular</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
             <tr>
-              <td>1,008</td>
-              <td>random</td>
-              <td>data</td>
-              <td>
+              <td>999</td>
+              <td>2021-12-31</td>
+              <td>Example</td>
+              <td>Failed</td>
+              <td> 
                 <div class="progress">
                   <div class="progress-bar bg-danger w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
               </td>
             </tr>
+            {% for run in object_list %}
             <tr>
-              <td>1,009</td>
-              <td>placeholder</td>
-              <td>irrelevant</td>
+              <td><a class="text-decoration-none text-reset" href="{% url 'workflow:run-details' run.id %}">{{ run.id }}</a></td>
+              <td><a class="text-decoration-none text-reset" href="{% url 'workflow:run-details' run.id %}">{{ run.date_created|date:'Y-m-d'}}</a></td>
+              <td><a class="text-decoration-none text-reset" href="{% url 'workflow:run-details' run.id %}">{{ run.workflow.name }}</a></td>
+              <td><a class="text-decoration-none text-reset" href="{% url 'workflow:run-details' run.id %}">{{ run.Status }}</a></td>
               <td>
+                {% if run.Status == "Created" or run.Status == "Queued" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-info w-0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                {% elif run.Status == "Testing" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-info w-100" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                {% elif run.Status == "Running" %}
                 <div class="progress">
-                  <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  <div class="progress-bar bg-info w-100" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50</div>
                 </div>
+                {% elif run.Status == "Generate Report" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-warning w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                {% elif run.Status == "Finished" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                {% elif run.Status == "Failed" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-danger w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                {% else %}
+                  {{run.Status}}
+                {% endif %}
               </td>
             </tr>
-            <tr>
-              <td>1,010</td>
-              <td>data</td>
-              <td>rich</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>1,011</td>
-              <td>information</td>
-              <td>placeholder</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>1,012</td>
-              <td>text</td>
-              <td>placeholder</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar bg-danger w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>1,013</td>
-              <td>dashboard</td>
-              <td>irrelevant</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>1,014</td>
-              <td>dashboard</td>
-              <td>illustrative</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>1,015</td>
-              <td>random</td>
-              <td>tabular</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar bg-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
