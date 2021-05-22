@@ -1,5 +1,6 @@
 {% extends "workflow/project_base.html" %}
 {% block title %}Run {{ object.id }} of {{ object.workflow.name}}{% endblock title %}
+{% load static %}
 
 {% block content %}
   <div class="container-fluid bg-light p-4 mb-4">
@@ -21,7 +22,7 @@
         </tr>
         <tr>
           <th scope="row">Status</th>
-          <td>{{ object.Status }}</td>
+          <td  id="run_status_cell">{{ object.Status }}</td>
         </tr>
         <tr>
           <th scope="row">Started by</th>
@@ -65,3 +66,7 @@
   {% include 'workflow/message_detail.html' %}
 
 {% endblock content %}
+
+{% block javascript %}
+<script id="websocket_run_status" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_status.js' %}"></script>
+{% endblock javascript %}

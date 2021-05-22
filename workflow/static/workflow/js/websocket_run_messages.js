@@ -1,4 +1,4 @@
-const RUN_ID = document.getElementById('socket_script').getAttribute('run_id');
+const RUN_ID = document.getElementById('websocket_run_messages').getAttribute('run_id');
 
 // open the websocket
 var ws_url = 'ws://' + window.location.host + '/ws/messages/' + RUN_ID + '/';
@@ -6,12 +6,12 @@ var messagesSocket = new WebSocket(ws_url);
 
 messagesSocket.onmessage = function(event) {
     var data = JSON.parse(event.data);
-    console.log('WebSocket message received:', event);
+    // console.log('Run Message WebSocket message received:', event);
     addRows(data)
 };
 
 messagesSocket.onopen = function open() {
-    console.log('WebSocket connection created.');
+    console.log('Websocket connection for run ' + RUN_ID + ' messages created.');
 };
 
 if (messagesSocket.readyState == WebSocket.OPEN) {
@@ -28,7 +28,6 @@ function clear_undefined(data) {
 
 
 function addRows(data) {
-    console.log(data);
     // Find a <table> element with id="myTable":
     var table = document.getElementById('messageTable').getElementsByTagName('tbody')[0];
 

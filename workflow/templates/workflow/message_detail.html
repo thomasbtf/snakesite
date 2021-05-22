@@ -49,5 +49,5 @@
     </div>
 
 {% block javascript %}
-<script id="socket_script" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_messages.js' %}"></script>
+<script id="websocket_run_messages" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_messages.js' %}"></script>
 {% endblock javascript %}

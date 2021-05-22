@@ -115,6 +115,18 @@ def runmessages_created(sender, instance, created, raw, **kwargs):
     """
     When a run message is created, this updates the message table
     """
-    group_name = str(instance.run.id)
-    msg = [{'timestamp':instance.snakemake_timestamp.strftime('%H:%M:%S')},instance.message]
-    broadcast_message(msg, group_name)
+    if created:
+        group_name = str(instance.run.id)
+        msg = [{'timestamp':instance.snakemake_timestamp.strftime('%H:%M:%S')},instance.message]
+        broadcast_message(msg, group_name)
+
+
+@receiver(post_save, sender=RunStatus)
+def runstatus_created(sender, instance, created, raw, **kwargs):
+    """
+    When a run status is created, this updates the frontend
+    """
+    if created:
+        group_name = "".join(["status_", str(instance.run.id)])
+        msg = [{'run_status':instance.get_status_display()}]
+        broadcast_message(msg, group_name)
