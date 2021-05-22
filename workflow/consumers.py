@@ -2,6 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.consumer import SyncConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+
 class RunMessageConsumer(SyncConsumer):
     def websocket_connect(self, event):
         group_name = self.scope["url_route"]["kwargs"]["run_id"]
@@ -32,20 +33,18 @@ class RunMessageConsumer(SyncConsumer):
 
 class AsyncRunStatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.channel_group_name = "".join(["status_", self.scope["url_route"]["kwargs"]["run_id"]])
+        self.channel_group_name = "".join(
+            ["status_", self.scope["url_route"]["kwargs"]["run_id"]]
+        )
 
         # Join the group
-        await self.channel_layer.group_add(
-            self.channel_group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_add(self.channel_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave the group
         await self.channel_layer.group_discard(
-            self.channel_group_name,
-            self.channel_name
+            self.channel_group_name, self.channel_name
         )
 
     # Receive message from WebSocket
@@ -55,7 +54,7 @@ class AsyncRunStatusConsumer(AsyncWebsocketConsumer):
     # Receive message from the group
     async def new_message(self, event):
         print("Msg arrived in consumer, sending ot socket")
-        text = event['content']
+        text = event["content"]
         print("new async msg to", self.channel_group_name)
         # Send message to WebSocket
         await self.send(text_data=text)

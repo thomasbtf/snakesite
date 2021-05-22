@@ -148,10 +148,6 @@ def broadcast_message(msg: list[dict], group_name: str):
         group_name,
         {
             "type": "new_message",
-            "content": json.dumps(msg,
-                sort_keys=True,
-                indent=1,
-                cls=DjangoJSONEncoder
-                ),
+            "content": json.dumps(msg, sort_keys=True, indent=1, cls=DjangoJSONEncoder),
         },
     )
