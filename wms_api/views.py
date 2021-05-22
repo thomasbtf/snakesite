@@ -21,7 +21,7 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from workflow.models import Run, RunMessage
+from workflow.models import Run, RunMessage, RunProgress
 from rest_framework import status
 
 
@@ -135,11 +135,24 @@ class UpdateWorkflowStatusView(APIView):
 
     def post(self, request):
         run_instance = get_object_or_404(Run, uuid=request.POST.get("id"))
+        msg = json.loads(request.POST.get("msg", {}))
         RunMessage.objects.create(
             run=run_instance,
-            message=json.loads(request.POST.get("msg", {})),
+            message=msg,
             snakemake_timestamp=datetime.strptime(
                 request.POST.get("timestamp"), "%a %b %d %H:%M:%S %Y"
             ),
         )
+
+        if msg.get("level", []) == "progress":
+            RunProgress.objects.create(
+                run=run_instance,
+                done=msg.get("done", ""),
+                total=msg.get("total", ""),
+                percent=round(int(msg.get("done", 0)) / int(msg.get("total", 1))) * 100,
+                snakemake_timestamp=datetime.strptime(
+                    request.POST.get("timestamp"), "%a %b %d %H:%M:%S %Y"
+                ),
+            )
+
         return Response(status=status.HTTP_200_OK)

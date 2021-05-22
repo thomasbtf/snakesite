@@ -3,6 +3,7 @@
 {% block nav_item_runs %}active{% endblock nav_item_runs %}
 {% block content %}
 
+    {% if run_list %}
     <div class="container-fluid">
         <!-- left columns -->
         <div class="row">
@@ -47,5 +48,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
 {% endblock %}

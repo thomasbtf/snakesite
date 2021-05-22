@@ -5,6 +5,7 @@ from .models import (
     Run,
     RunInputFile,
     RunMessage,
+    RunProgress,
     RunStatus,
     Workflow,
     WorkflowSetting,
@@ -13,16 +14,18 @@ from .models import (
     WorkflowTemplateSetting,
 )
 
-for model in [
-    Workflow,
-    WorkflowTemplate,
-    WorkflowStatus,
-    Run,
-    RunStatus,
-    RunMessage,
-    Result,
-    RunInputFile,
-    WorkflowTemplateSetting,
-    WorkflowSetting,
-]:
-    admin.site.register(model)
+admin.site.register(
+    [
+        Workflow,
+        WorkflowTemplate,
+        WorkflowStatus,
+        Run,
+        RunStatus,
+        RunMessage,
+        RunProgress,
+        Result,
+        RunInputFile,
+        WorkflowTemplateSetting,
+        WorkflowSetting,
+    ]
+)

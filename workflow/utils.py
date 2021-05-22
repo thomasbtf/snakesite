@@ -143,6 +143,7 @@ def broadcast_message(msg: list[dict], group_name: str):
         msg (list[dict]): Message to broadcast
         group_name (str): Name of the group to broadcast to
     """
+    print("Sending msg to consumer", group_name, msg)
     channel_layer = channels.layers.get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         group_name,

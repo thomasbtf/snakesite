@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from .models import (
     Run,
     RunMessage,
+    RunProgress,
     RunStatus,
     Workflow,
     WorkflowSetting,
@@ -133,3 +134,15 @@ def runstatus_created(sender, instance, created, raw, **kwargs):
         group_name = "".join(["status_", str(instance.run.id)])
         msg = [{"run_status": instance.get_status_display()}]
         broadcast_message(msg, group_name)
+
+
+@receiver(post_save, sender=RunProgress)
+def runprogress_created(sender, instance, created, raw, **kwargs):
+    """
+    When a run progress is created, this updates the frontend
+    """
+    # if created:
+    print("RunProgress trigger")
+    group_name = "".join(["progress_", str(instance.run.id)])
+    msg = [{"run_progress": instance.percent}]
+    broadcast_message(msg, group_name)

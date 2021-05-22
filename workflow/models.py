@@ -5,7 +5,6 @@ from collections import defaultdict
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.fields import PositiveSmallIntegerField
 from django.db.models.fields.related import ForeignKey
 from django.urls import reverse
 
@@ -334,11 +333,26 @@ class RunStatus(models.Model):
     status = models.CharField(
         max_length=15, choices=RUN_STATUS_CHOICES, default="CREATED", blank=False
     )
-    progress = PositiveSmallIntegerField(default=0, blank=False)
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
         return f"{self.run} {self.status}"
+
+
+class RunProgress(models.Model):
+    """
+    Progress of a run.
+    """
+
+    run = ForeignKey(Run, on_delete=models.CASCADE)
+    done = models.PositiveIntegerField()
+    total = models.PositiveIntegerField()
+    percent = models.FloatField()
+    snakemake_timestamp = models.DateTimeField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.run} {self.percent}"
 
 
 class Result(models.Model):
