@@ -5,6 +5,7 @@ import threading
 
 import channels.layers
 from asgiref.sync import async_to_sync
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def make_dir(dir: str):
@@ -147,6 +148,9 @@ def broadcast_message(msg: list[dict], group_name: str):
         group_name,
         {
             "type": "new_message",
-            "content": json.dumps(msg),
+            "content": json.dumps(msg,  sort_keys=True,
+                indent=1,
+                cls=DjangoJSONEncoder
+                ),
         },
     )

@@ -116,5 +116,5 @@ def runmessages_created(sender, instance, created, raw, **kwargs):
     When a run message is created, this updates the message table
     """
     group_name = str(instance.run.id)
-    msg = [instance.message]
+    msg = [{'timestamp':instance.snakemake_timestamp.strftime('%H:%M:%S')},instance.message]
     broadcast_message(msg, group_name)

@@ -1,23 +1,14 @@
-{% extends "workflow/run_list.html" %}
+{% extends "workflow/project_base.html" %}
 {% block title %}Run {{ object.id }} of {{ object.workflow.name}}{% endblock title %}
 
-{% block selected_run %}
-  {% if run.id == object.id %}
-    active
-  {% endif %}
-{% endblock selected_run %}
-
-{% block right_size %}9{% endblock right_size %}
-{% block left_size %}3{% endblock left_size %}
-
-{% block detail_content %}
+{% block content %}
   <div class="container-fluid bg-light p-4 mb-4">
     <h1 >Run {{ object.id }}</h1>
     <p class="lead text-muted">in {{ object.workflow.name}}</p> 
     <a href="#" class="btn btn-outline-primary">Restart</a>
     <a href="#" class="btn btn-outline-warning">Cancel</a>
     <a href="{% url 'workflow:run-delete' object.id %}" class="btn btn-outline-danger">Delete</a>
-    <a href="#" class="btn btn-outline-secondary">Back</a>
+    <a href="{% url 'workflow:runs'%}" class="btn btn-outline-secondary">Back</a>
   </div>
 
   <div class="container-fluid bg-light p-4 mb-4">
@@ -73,4 +64,4 @@
   <!-- messages -->
   {% include 'workflow/message_detail.html' %}
 
-{% endblock detail_content %}
+{% endblock content %}

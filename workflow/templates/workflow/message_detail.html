@@ -13,8 +13,8 @@
                 <th></th>
                 </tr>
             </thead>
-            {% for msg in object.Messages %}
             <tbody>
+                {% for msg in object.Messages %}
                 <tr>
                     <td>{{ msg.snakemake_timestamp|date:"G:i:s" }}</td>
                     <td>{{ msg.message.level }}</td>
@@ -48,4 +48,6 @@
         </table>
     </div>
 
-<!-- {% block javascript %}<script id="socket_script" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_messages.js' %}"></script>{% endblock javascript %} -->
+{% block javascript %}
+<script id="socket_script" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_messages.js' %}"></script>
+{% endblock javascript %}
