@@ -12,44 +12,46 @@
         </p>
     </div>
     
-    <div class="container-fluid bg-light p-4 mb-4">
-        <h2>Available Templates</h2>
-        <div class="row row-cols-1 row-cols-md-3 g-3">
-            {% for template in object_list %}
-                <div class="col">
-                    <div class="card h-100 box-shadow">
-                        <!-- TODO Maybe add images later -->
-                        <!-- <img src="..." class="card-img-top" alt="..."> -->
-                        <div class="card-body">
-                            <h5><a class="card-title test-title text-decoration-none text-reset" href="{% url 'workflow:template-detail' template.id %}">{{ template.name }}</a></h5>
-                            <small class="card-subtitle mb-2 text-muted"><a href="{{ template.url }}" class="link-secondary text-decoration-none">{{ template.url }}</a></small>
-                            <p class="card-text mt-2">{{ template.description }}</p>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center m-3">
-                            <div class="btn-group">
-                                <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:template-detail' template.id %}" role="button">Details</a>
-                                <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:workflow-create' template.id %}" role="button">Use</a>
+    {% if object_list %}
+        <div class="container-fluid bg-light p-4 mb-4">
+            <h2>Available Templates</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                {% for template in object_list %}
+                    <div class="col">
+                        <div class="card h-100 box-shadow">
+                            <!-- TODO Maybe add images later -->
+                            <!-- <img src="..." class="card-img-top" alt="..."> -->
+                            <div class="card-body">
+                                <h5><a class="card-title test-title text-decoration-none text-reset" href="{% url 'workflow:template-detail' template.id %}">{{ template.name }}</a></h5>
+                                <small class="card-subtitle mb-2 text-muted"><a href="{{ template.url }}" class="link-secondary text-decoration-none">{{ template.url }}</a></small>
+                                <p class="card-text mt-2">{{ template.description }}</p>
                             </div>
-                            <small class="text-muted">
-                            {% if template.NumWorkflows == 1 %}
-                                1 Workflow
-                            {% else %}
-                                {{ template.NumWorkflows }} Workflows
-                            {% endif %}
+                            <div class="d-flex justify-content-between align-items-center m-3">
+                                <div class="btn-group">
+                                    <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:template-detail' template.id %}" role="button">Details</a>
+                                    <a class="btn btn btn-sm btn-outline-secondary" href="{% url 'workflow:workflow-create' template.id %}" role="button">Use</a>
+                                </div>
+                                <small class="text-muted">
+                                {% if template.NumWorkflows == 1 %}
+                                    1 Workflow
+                                {% else %}
+                                    {{ template.NumWorkflows }} Workflows
+                                {% endif %}
 
-                            {% if template.NumRuns == 1 %}
-                                1 Run
-                            {% else %}
-                                {{ template.NumRuns }} Runs
-                            {% endif %}
-                            </small>
+                                {% if template.NumRuns == 1 %}
+                                    1 Run
+                                {% else %}
+                                    {{ template.NumRuns }} Runs
+                                {% endif %}
+                                </small>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
 
         {% include 'workflow/pagination.html' %}
+    {% endif %}
 
     </div>
 {% endblock %}

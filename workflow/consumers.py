@@ -58,3 +58,33 @@ class AsyncRunStatusConsumer(AsyncWebsocketConsumer):
         print("new async msg to", self.channel_group_name)
         # Send message to WebSocket
         await self.send(text_data=text)
+
+
+class AsyncRunProgressConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.channel_group_name = "".join(
+            ["progress_", self.scope["url_route"]["kwargs"]["run_id"]]
+        )
+
+        print(self.channel_group_name)
+
+        # Join the group
+        await self.channel_layer.group_add(self.channel_group_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        # Leave the group
+        await self.channel_layer.group_discard(
+            self.channel_group_name, self.channel_name
+        )
+
+    # Receive message from WebSocket
+    async def receive(self, text_data=None, bytes_data=None):
+        pass
+
+    # Receive message from the group
+    async def new_message(self, event):
+        print("sent progress msg", event["content"])
+        text = event["content"]
+        # Send message to WebSocket
+        await self.send(text_data=text)

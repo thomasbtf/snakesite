@@ -17,8 +17,7 @@
     <table class="table">
         <tr>
           <th scope="row">Progress</th>
-          <td>
-          </td>
+          <td id="run_progress_cell">0%</td>
         </tr>
         <tr>
           <th scope="row">Status</th>
@@ -68,5 +67,6 @@
 {% endblock content %}
 
 {% block javascript %}
+<script id="websocket_run_progress" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_progress.js' %}"></script>
 <script id="websocket_run_status" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_status.js' %}"></script>
 {% endblock javascript %}

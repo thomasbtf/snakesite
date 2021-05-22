@@ -10,7 +10,7 @@ from django.db.models.fields.related import ForeignKey
 from django.urls import reverse
 
 from .storage import OverwriteStorage
-from .utils import make_dir
+from .utils import make_dir, broadcast_message
 
 WORKFLOW_STATUS_CHOICES = [
     ("CREATED", "Created"),
@@ -334,18 +334,32 @@ class RunStatus(models.Model):
     status = models.CharField(
         max_length=15, choices=RUN_STATUS_CHOICES, default="CREATED", blank=False
     )
-    progress = PositiveSmallIntegerField(default=0, blank=False)
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self) -> str:
         return f"{self.run} {self.status}"
 
 
+class RunProgress(models.Model):
+    """
+    Progress of a run.
+    """
+    
+    run = ForeignKey(Run, on_delete=models.CASCADE)
+    done = models.PositiveIntegerField(blank=False)
+    total = models.PositiveIntegerField(blank=False)
+    percent = models.FloatField(blank=False)
+    snakemake_timestamp = models.DateTimeField(blank=False)
+    date_created = models.DateTimeField(auto_now_add=True, blank=False)
+
+    def __str__(self) -> str:
+        return f"{self.run} {self.percent}"
+
+
 class Result(models.Model):
     """
     Results of a run.
     """
-
     run = ForeignKey(Run, on_delete=models.CASCADE)
     path_results = models.FilePathField(
         path=results_path, allow_files=False, allow_folders=True
