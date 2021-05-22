@@ -349,7 +349,7 @@ class RunProgress(models.Model):
     total = models.PositiveIntegerField()
     percent = models.FloatField()
     snakemake_timestamp = models.DateTimeField()
-    date_created = models.DateTimeField(auto_now_add=True, blank=False)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f"{self.run} {self.percent}"
