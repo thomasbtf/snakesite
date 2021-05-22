@@ -1,36 +1,51 @@
-{% extends "workflow/project_base.html" %}
 {% load static %}
-{% block content %}
 
     <div class="container-fluid bg-light p-4 mb-4"> 
         {{ object.MessageHeaders }}
-        <table class="table" id="messageTable">
+
+        <table class="table table-hover" id="messageTable">
             <thead>
-            <tr>
-                <th scope="col">Timestamp</th>
-                <th scope="col">Level</th>
-                <th scope="col">Status</th>
-                <th scope="col">Exception</th>
-                <th scope="col">Message</th>
-                <th scope="col">File</th>
-            </tr>
+                <tr>
+                <th>Timestamp</th>
+                <th>Level</th>
+                <th>Other</th>
+                <th>Info</th>
+                <th></th>
+                </tr>
             </thead>
             {% for msg in object.Messages %}
             <tbody>
                 <tr>
-                    <th scope="row">{{ msg.snakemake_timestamp|date:"G:i:s" }}</th>
+                    <td>{{ msg.snakemake_timestamp|date:"G:i:s" }}</td>
                     <td>{{ msg.message.level }}</td>
-                    <td>{{ msg.message.status }}</td>
-                    <td>{{ msg.message.exception }}</td>
-                    <td style ="word-break:break-all;">{{ msg.message.msg }}</td>
-                    <td >{{ msg.message.file }}</td>
+                    <th>Job</th>
+                    <td style ="word-break:break-all;">{{ msg.message.job }}</td>
+                    <td></td>
                 </tr>
-            </tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <th>Status</th>
+                    <td style ="word-break:break-all;">{{ msg.message.status }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <th>Message</th>
+                    <td style ="word-break:break-all;">{% if msg.message.exception %}{{ msg.message.exception }} {% endif %}{{ msg.message.msg }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <th>File</th>
+                    <td style ="word-break:break-all;">{{ msg.message.file }}</td>
+                    <td></td>
+                </tr>
             {% endfor %}
+            </tbody>
         </table>
-        </div>
     </div>
-
-{% endblock content %}
 
 <!-- {% block javascript %}<script id="socket_script" run_id="{{ object.id }}" type="text/javascript" src="{% static 'workflow/js/websocket_run_messages.js' %}"></script>{% endblock javascript %} -->

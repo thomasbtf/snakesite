@@ -69,18 +69,8 @@
     </table>
   </div>
 
-  {% if object.Messages %}
-  <div class="container-fluid bg-light p-4 mb-4">
-    <h2>Messages</h2>
-    {% for msg in object.Messages %}
-      <table class="table">
-        <tr>
-          <th scope="row">{{ msg.snakemake_timestamp }}</th>
-          <td>{{ msg.message }}</td>
-        </tr>
-      </table>
-    {% endfor %}
-  </div>
-  {% endif %}
+
+  <!-- messages -->
+  {% include 'workflow/message_detail.html' %}
 
 {% endblock detail_content %}
