@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import (
@@ -216,10 +217,22 @@ class ResultListView(ListView):
     ordering = ["-date_created"]
 
 
-class ResultDetailsView(TemplateView):
-    template_name = "workflow/index.html"
+class ResultDetailsView(DetailView):
+    model = Result
 
 
 class MessageDetailView(DeleteView):
     model = Run
     template_name = "workflow/message_detail.html"
+
+
+def report_view(request, pk):
+    result = Result.objects.get(pk=pk)
+    return render(request, result.path_index_report)
+
+
+def download_report(request, pk):
+    result = Result.objects.get(id=pk)
+    filename = result.path_result_zip
+    response = FileResponse(open(filename, "rb"))
+    return response

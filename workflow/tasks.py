@@ -1,11 +1,13 @@
 import ast
 import os
 import shlex
+import zipfile
 
 from celery import chain, shared_task
+from django.conf import settings
 
-from .models import Run, RunStatus, WorkflowSetting, WorkflowStatus
-from .utils import CommandRunner
+from .models import Result, Run, RunStatus, WorkflowSetting, WorkflowStatus
+from .utils import CommandRunner, make_dir
 
 
 def set_run_status(run_pk: int, status: str):
@@ -87,16 +89,25 @@ def start_snakemake_run(run_pk: int) -> None:
 
     args = (
         f"snakemake --wms-monitor http://127.0.0.1:8000/api --wms-monitor-arg run_id={run_instance.id} ",
-        f"workflow_id={run_instance.workflow.id} --snakefile '{snakefile}' --cores {cores} ",
+        f"workflow_id={run_instance.workflow_id} --snakefile '{snakefile}' --cores {cores} ",
         f"--directory '{workdir}' --use-conda {target}",
     )
 
     args = "".join(args)
 
+    results_dir = os.path.join(
+        settings.RESULTS, str(run_instance.workflow_id), str(run_pk)
+    )
+    report_name = "{date}-workflow-{wf_pk}-run-{run_pk}.zip".format(
+        date=run_instance.date_created.strftime("%Y-%m-%d"),
+        run_pk=run_pk,
+        wf_pk=run_instance.workflow_id,
+    )
+
     chain(
         snakemake_dry_run.si(run_pk, args, env_vars),
         snakemake_run.si(run_pk, args, env_vars),
-        snakemake_report.si(run_pk, args, env_vars),
+        snakemake_report.si(run_pk, args, env_vars, results_dir, report_name),
         success.si(run_pk),
     ).apply_async()
 
@@ -160,13 +171,17 @@ def snakemake_run(self, run_pk: int, args: str, env_vars: dict) -> int:
 
 
 @shared_task(bind=True)
-def snakemake_report(self, run_pk: int, args: str, env_vars: dict) -> int:
+def snakemake_report(
+    self, run_pk: int, args: str, env_vars: dict, results_dir: str, report_name: str
+) -> int:
     """Generates snakemake report.
 
     Args:
         run_pk (int): Primary key of run
         args (str): Arguments to snakemake with
         env_vars (dict): Environment variabels
+        results_dir (str): path to result zip
+        report_name (str): Arguments to snakemake with
 
     Returns:
         int: Returncode of snakemake execution
@@ -174,14 +189,28 @@ def snakemake_report(self, run_pk: int, args: str, env_vars: dict) -> int:
     try:
         set_run_status(run_pk, "REPORTING")
 
+        make_dir(results_dir)
+        report_path = os.path.join(results_dir, report_name)
+
+        args += f" --report {report_path}"
         args = shlex.split(args)
         runner = CommandRunner()
         runner.run_command(args, env=env_vars)
 
-        args += " --report report.zip"
-
         if runner.retval == 1:
             cancel_run(self, run_pk)
+
+        with zipfile.ZipFile(report_path, "r") as zip_ref:
+            zip_ref.extractall(results_dir)
+
+        Result.objects.create(
+            run=Run.objects.get(pk=run_pk),
+            path_results=results_dir,
+            path_result_zip=report_path,
+            path_index_report=os.path.join(
+                results_dir, report_name.removesuffix(".zip"), "report.html"
+            ),
+        )
 
         return runner.retval
 

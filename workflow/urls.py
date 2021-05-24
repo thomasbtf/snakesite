@@ -22,6 +22,8 @@ from .views import (
     WorkflowTemplateSettingUpdateView,
     WorkflowTemplateUpdateView,
     WorkflowUpdateView,
+    download_report,
+    report_view,
     run_create_view,
 )
 
@@ -85,6 +87,8 @@ urlpatterns = [
     path("run/<int:pk>/", RunDetailView.as_view(), name="run-details"),
     path("run/<int:pk>/delete/", RunDeleteView.as_view(), name="run-delete"),
     path("results/", ResultListView.as_view(), name="results"),
-    path("results/<int:pk>/", ResultDetailsView.as_view(), name="results-details"),
+    path("result/<int:pk>/", ResultDetailsView.as_view(), name="results-details"),
+    path("report/<int:pk>/", report_view, name="report"),
     path("messages/<int:pk>/", MessageDetailView.as_view(), name="run-messages"),
+    path("download-report/<int:pk>/", download_report, name="download-report"),
 ]

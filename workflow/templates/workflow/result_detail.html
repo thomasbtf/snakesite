@@ -1,0 +1,11 @@
+{% extends "workflow/project_base.html" %}
+{% block title %}Result {{ object.id }} of {{ object.run.name}}{% endblock title %}
+{% load static %}
+
+{% block content %}
+    <div class="container-fluid bg-light p-4 mb-4">
+        <iframe id="encoder_iframe" height=100% width="100%" src="http://localhost:8000/report/7/">
+    </div>
+
+    
+{% endblock content %}
