@@ -95,7 +95,9 @@ def start_snakemake_run(run_pk: int) -> None:
 
     args = "".join(args)
 
-    results_dir = os.path.join(settings.RESULTS, str(run_instance.workflow_id), str(run_pk))
+    results_dir = os.path.join(
+        settings.RESULTS, str(run_instance.workflow_id), str(run_pk)
+    )
     report_name = "{date}-workflow-{wf_pk}-run-{run_pk}.zip".format(
         date=run_instance.date_created.strftime("%Y-%m-%d"),
         run_pk=run_pk,
