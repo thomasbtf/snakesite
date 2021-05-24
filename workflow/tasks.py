@@ -89,7 +89,7 @@ def start_snakemake_run(run_pk: int) -> None:
 
     args = (
         f"snakemake --wms-monitor http://127.0.0.1:8000/api --wms-monitor-arg run_id={run_instance.id} ",
-        f"workflow_id={run_instance.workflow.id} --snakefile '{snakefile}' --cores {cores} ",
+        f"workflow_id={run_instance.workflow_id} --snakefile '{snakefile}' --cores {cores} ",
         f"--directory '{workdir}' --use-conda {target}",
     )
 
