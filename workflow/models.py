@@ -286,6 +286,22 @@ class Run(models.Model):
         return headers
 
 
+    @property
+    def Results(self):
+        return self.result_set.all()
+
+    @property
+    def Progress(self):
+        latest_progress = (self.runprogress_set.all()
+            .order_by("-date_created")
+            .first())
+        if latest_progress:
+            latest_progress = latest_progress.percent
+        else:
+            latest_progress = 0
+        return "{:.0f}%".format(latest_progress)
+
+
 def input_data_path(instance, filename):
     settings = WorkflowSetting.objects.get(workflow_id=instance.run.workflow.id)
     return f"{settings.storage_location}/data/{filename}"
@@ -361,13 +377,10 @@ class Result(models.Model):
     """
 
     run = ForeignKey(Run, on_delete=models.CASCADE)
-    path_results = models.FilePathField(
-        path=results_path, allow_files=False, allow_folders=True
-    )
-    path_index_report = models.FilePathField(
-        path=results_path, allow_files=True, allow_folders=False
-    )
+    path_results = models.CharField(max_length=300)
+    path_result_zip = models.CharField(max_length=300)
+    path_index_report = models.CharField(max_length=300)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return self.path_index_report
+        return f"Report {self.run}"

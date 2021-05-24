@@ -17,7 +17,7 @@
     <table class="table">
         <tr>
           <th scope="row">Progress</th>
-          <td id="run_progress_cell">0%</td>
+          <td id="run_progress_cell">{{ object.Progress }}</td>
         </tr>
         <tr>
           <th scope="row">Status</th>
@@ -56,6 +56,16 @@
           <th scope="row">Input Files</th>
           <td></td>
         </tr>
+        {% if object.Results %}
+        <tr>
+          <th scope="row">Report</th>
+          <td>
+          {% for result in object.Results %}
+            <a  href="{% url 'workflow:download-report' result.id %}" download>Download</a> <br>
+          {% endfor %}
+          </td>
+        </tr>
+        {% endif %}
       </tbody>
     </table>
   </div>
