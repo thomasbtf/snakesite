@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workflow', '0003_auto_20210523_2309'),
+        ("workflow", "0003_auto_20210523_2309"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='result',
-            name='path_result_zip',
-            field=models.CharField(default='asd', max_length=300),
+            model_name="result",
+            name="path_result_zip",
+            field=models.CharField(default="asd", max_length=300),
             preserve_default=False,
         ),
     ]

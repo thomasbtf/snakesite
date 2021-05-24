@@ -4,12 +4,26 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  TemplateView, UpdateView)
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
 from .forms import InputFilesCreateForm, RunCreateForm
-from .models import (Result, Run, RunInputFile, Workflow, WorkflowSetting,
-                     WorkflowStatus, WorkflowTemplate, WorkflowTemplateSetting)
+from .models import (
+    Result,
+    Run,
+    RunInputFile,
+    Workflow,
+    WorkflowSetting,
+    WorkflowStatus,
+    WorkflowTemplate,
+    WorkflowTemplateSetting,
+)
 
 
 class IndexView(TemplateView):
@@ -204,7 +218,7 @@ class ResultListView(ListView):
 
 
 class ResultDetailsView(DetailView):
-    model=Result
+    model = Result
 
 
 class MessageDetailView(DeleteView):
@@ -216,8 +230,9 @@ def report_view(request, pk):
     result = Result.objects.get(pk=pk)
     return render(request, result.path_index_report)
 
+
 def download_report(request, pk):
     result = Result.objects.get(id=pk)
     filename = result.path_result_zip
-    response = FileResponse(open(filename, 'rb'))
+    response = FileResponse(open(filename, "rb"))
     return response

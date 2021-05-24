@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workflow', '0002_auto_20210523_0007'),
+        ("workflow", "0002_auto_20210523_0007"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='result',
-            name='path_index_report',
+            model_name="result",
+            name="path_index_report",
             field=models.CharField(max_length=300),
         ),
         migrations.AlterField(
-            model_name='result',
-            name='path_results',
+            model_name="result",
+            name="path_results",
             field=models.CharField(max_length=300),
         ),
     ]

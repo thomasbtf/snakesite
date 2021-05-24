@@ -285,16 +285,13 @@ class Run(models.Model):
                 headers[key] += 1
         return headers
 
-
     @property
     def Results(self):
         return self.result_set.all()
 
     @property
     def Progress(self):
-        latest_progress = (self.runprogress_set.all()
-            .order_by("-date_created")
-            .first())
+        latest_progress = self.runprogress_set.all().order_by("-date_created").first()
         if latest_progress:
             latest_progress = latest_progress.percent
         else:

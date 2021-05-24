@@ -95,8 +95,14 @@ def start_snakemake_run(run_pk: int) -> None:
 
     args = "".join(args)
 
-    results_dir = os.path.join(settings.RESULTS,str(run_instance.workflow.id), str(run_pk))
-    report_name = "{date}-workflow-{wf_pl}-run-{run_pk}.zip".format(date = run_instance.date_created.strftime("%Y-%m-%d"), run_pk=run_pk, wf_pl=run_instance.workflow.id)
+    results_dir = os.path.join(
+        settings.RESULTS, str(run_instance.workflow.id), str(run_pk)
+    )
+    report_name = "{date}-workflow-{wf_pl}-run-{run_pk}.zip".format(
+        date=run_instance.date_created.strftime("%Y-%m-%d"),
+        run_pk=run_pk,
+        wf_pl=run_instance.workflow.id,
+    )
 
     chain(
         snakemake_dry_run.si(run_pk, args, env_vars),
@@ -165,7 +171,9 @@ def snakemake_run(self, run_pk: int, args: str, env_vars: dict) -> int:
 
 
 @shared_task(bind=True)
-def snakemake_report(self, run_pk: int, args: str, env_vars: dict, results_dir: str, report_name: str) -> int:
+def snakemake_report(
+    self, run_pk: int, args: str, env_vars: dict, results_dir: str, report_name: str
+) -> int:
     """Generates snakemake report.
 
     Args:
@@ -183,7 +191,7 @@ def snakemake_report(self, run_pk: int, args: str, env_vars: dict, results_dir: 
 
         make_dir(results_dir)
         report_path = os.path.join(results_dir, report_name)
-        
+
         args += f" --report {report_path}"
         args = shlex.split(args)
         runner = CommandRunner()
@@ -192,14 +200,16 @@ def snakemake_report(self, run_pk: int, args: str, env_vars: dict, results_dir: 
         if runner.retval == 1:
             cancel_run(self, run_pk)
 
-        with zipfile.ZipFile(report_path,"r") as zip_ref:
+        with zipfile.ZipFile(report_path, "r") as zip_ref:
             zip_ref.extractall(results_dir)
 
         Result.objects.create(
-            run = Run.objects.get(pk=run_pk),
+            run=Run.objects.get(pk=run_pk),
             path_results=results_dir,
             path_result_zip=report_path,
-            path_index_report= os.path.join(results_dir, report_name.removesuffix(".zip"), "report.html"),
+            path_index_report=os.path.join(
+                results_dir, report_name.removesuffix(".zip"), "report.html"
+            ),
         )
 
         return runner.retval
