@@ -99,7 +99,7 @@ def start_snakemake_run(run_pk: int) -> None:
     report_name = "{date}-workflow-{wf_pl}-run-{run_pk}.zip".format(
         date=run_instance.date_created.strftime("%Y-%m-%d"),
         run_pk=run_pk,
-        wf_pl=run_instance.workflow.id,
+        wf_pl=run_instance.workflow_id,
     )
 
     chain(
